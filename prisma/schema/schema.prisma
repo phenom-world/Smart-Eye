@@ -1,0 +1,217 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder", "omitApi"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator zod {
+  provider                 = "zod-prisma-types"
+  output                   = "../zod-schema"
+  writeBarrelFiles         = false
+  createInputTypes         = false
+  addInputTypeValidation   = false
+  addIncludeType           = false
+  addSelectType            = false
+  validateWhereUniqueInput = false
+  useDefaultValidators     = false
+  coerceDate               = false
+  writeNullishInModelTypes = true
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  ARCHIVED
+}
+
+enum VisitStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum CheckedInMethod {
+  GPS
+  SIGNATURE
+  OTP
+}
+
+enum AdmissionStatus {
+  ACTIVE
+  DISCHARGED
+}
+
+model Provider {
+  uuid         String         @id @default(uuid())
+  id           Int            @unique @default(autoincrement())
+  name         String?        @db.VarChar(100)
+  billing      String?        @db.VarChar(100)
+  number       String?        @db.VarChar(20)
+  contact1     String?        @db.VarChar(20)
+  contact2     String?        @db.VarChar(20)
+  address1     String?        @db.VarChar(255)
+  address2     String?        @db.VarChar(255)
+  state        String?        @db.VarChar(10)
+  country      String?        @db.VarChar(100)
+  city         String?        @db.VarChar(100)
+  zip          String?        @db.VarChar(10)
+  tpi          String?        @db.VarChar(100)
+  npi          String?        @db.VarChar(100)
+  taxId        String?        @db.VarChar(100)
+  phone        String?        @db.VarChar(100)
+  fax          String?        @db.VarChar(100)
+  email        String?        @db.VarChar(100)
+  logo         Media?         @relation(fields: [logoId], references: [uuid])
+  logoId       String?
+  theme        String?        @default("#2051E5") @db.VarChar(100)
+  active       Boolean        @default(true)
+  archivedAt   DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Patient      Patient[]
+  Visit        Visit[]
+  UserProvider UserProvider[]
+}
+
+model User {
+  uuid                       String             @id @default(uuid())
+  id                         Int                @unique @default(autoincrement())
+  lastName                   String?            @db.VarChar(100)
+  firstName                  String?            @db.VarChar(100)
+  middleName                 String?            @db.VarChar(100)
+  email                      String             @unique
+  status                     UserStatus?
+  phone                      String?            @db.VarChar(20)
+  zip                        String?            @db.VarChar(10)
+  password                   String?            @db.VarChar(100)
+  country                    String?            @db.VarChar(100)
+  state                      String?            @db.VarChar(100)
+  city                       String?            @db.VarChar(100)
+  address                    String?            @db.VarChar(255)
+  role                       String?            @db.VarChar(100)
+  sssopId                    String?            @db.VarChar(100)
+  gender                     Gender?
+  dob                        DateTime?
+  invitedAt                  DateTime?
+  activeAt                   DateTime?
+  archivedAt                 DateTime?
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @updatedAt
+  Visit                      Visit[]
+  PatientAdmission           PatientAdmission[] @relation("Admission")
+  DischargedPatientAdmission PatientAdmission[] @relation("Discharge")
+  profilePhoto               Media?             @relation(fields: [profilePhotoId], references: [uuid])
+  profilePhotoId             String?
+  UserProvider               UserProvider[]
+}
+
+model Patient {
+  uuid             String             @id @default(uuid())
+  id               Int                @unique @default(autoincrement())
+  firstName        String?            @db.VarChar(100)
+  lastName         String?            @db.VarChar(100)
+  middleName       String?            @db.VarChar(100)
+  email            String             @unique
+  providerId       String
+  provider         Provider           @relation(fields: [providerId], references: [uuid])
+  gender           Gender?
+  dob              DateTime?
+  race             String?            @db.VarChar(100)
+  country          String?            @db.VarChar(100)
+  state            String?            @db.VarChar(100)
+  city             String?            @db.VarChar(100)
+  zip              String?            @db.VarChar(10)
+  apartmentNumber  String?            @db.VarChar(100)
+  address          String?            @db.VarChar(255)
+  medicaidNumber   String?            @db.VarChar(100)
+  phone            String?            @db.VarChar(100)
+  ssnNumber        String?            @db.VarChar(100)
+  active           Boolean            @default(true)
+  archivedAt       DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Visit            Visit[]
+  PatientAdmission PatientAdmission[]
+  profilePhoto     Media?             @relation(fields: [profilePhotoId], references: [uuid])
+  profilePhotoId   String?
+}
+
+model UserProvider {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [uuid])
+  userId     String   @db.VarChar(100)
+  provider   Provider @relation(fields: [providerId], references: [uuid])
+  providerId String   @db.VarChar(100)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model PatientAdmission {
+  uuid           String           @id @default(uuid())
+  id             Int              @unique @default(autoincrement())
+  patientId      String?
+  status         AdmissionStatus?
+  reason         String?          @db.VarChar(255)
+  admittedBy     User?            @relation("Admission", fields: [admittedById], references: [uuid])
+  admittedById   String?
+  dischargedBy   User?            @relation("Discharge", fields: [dischargedById], references: [uuid])
+  dischargedById String?          @db.VarChar(100)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  patient        Patient?         @relation(fields: [patientId], references: [uuid])
+}
+
+model Media {
+  uuid           String     @id @default(uuid())
+  id             Int        @unique @default(autoincrement())
+  fileType       String?    @db.VarChar(100)
+  fileName       String?    @db.VarChar(100)
+  mediaId        String     @unique
+  src            String?    @db.VarChar(255)
+  alt            String?    @db.VarChar(255)
+  size           Float?
+  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+  archivedAt     DateTime?
+  User           User[]
+  Patient        Patient[]
+  Provider       Provider[]
+  PatientVisit   Visit[]    @relation("PatientSignature")
+  CaregiverVisit Visit[]    @relation("CaregiverSignature")
+}
+
+model Visit {
+  uuid                 String       @id @default(uuid())
+  id                   Int          @unique @default(autoincrement())
+  patientId            String?
+  providerId           String
+  provider             Provider     @relation(fields: [providerId], references: [uuid])
+  caregiverId          String?
+  checkedinMethod      String?      @db.VarChar(100)
+  patientSignature     Media?       @relation("PatientSignature", fields: [patientSignatureId], references: [uuid])
+  patientSignatureId   String?
+  caregiverSignature   Media?       @relation("CaregiverSignature", fields: [caregiverSignatureId], references: [uuid])
+  caregiverSignatureId String?
+  visitDate            DateTime?
+  startTime            DateTime?
+  endTime              DateTime?
+  checkinAt            DateTime?
+  checkoutAt           DateTime?
+  latitude             Float?
+  longitude            Float?
+  otp                  String?      @db.VarChar(100)
+  otpExpiresAt         DateTime?
+  status               VisitStatus?
+  createdAt            DateTime     @default(dbgenerated("NOW()"))
+  updatedAt            DateTime     @updatedAt
+  patient              Patient?     @relation(fields: [patientId], references: [uuid])
+  caregiver            User?        @relation(fields: [caregiverId], references: [uuid])
+}
