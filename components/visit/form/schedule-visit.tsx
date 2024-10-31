@@ -70,7 +70,7 @@ const ScheduleVisit = ({ opened, onClose, onSuccessCallback }: { opened: boolean
                     placeholder="Select Patient"
                     options={data?.data?.map((patient) => ({
                       label: getFullName(patient?.firstName, patient?.lastName),
-                      value: patient.uuid,
+                      value: patient.cuid,
                     }))}
                     searchable
                     modalSearch
@@ -89,7 +89,7 @@ const ScheduleVisit = ({ opened, onClose, onSuccessCallback }: { opened: boolean
                     placeholder="Select Caregiver"
                     options={getUsers?.data?.map((user) => ({
                       label: getFullName(user?.firstName, user?.lastName),
-                      value: user.uuid,
+                      value: user.cuid,
                     }))}
                     searchable
                     loading={isLoading2}

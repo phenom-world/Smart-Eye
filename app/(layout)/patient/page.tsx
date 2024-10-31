@@ -44,7 +44,7 @@ function PatientsPage() {
     },
   });
 
-  const { trigger: triggerDischarge, isMutating: isMutatingDischarge } = useDischargePatient(selected?.uuid as string, {
+  const { trigger: triggerDischarge, isMutating: isMutatingDischarge } = useDischargePatient(selected?.cuid as string, {
     onSuccess: () => {
       closeModal();
       mutate();
@@ -92,7 +92,7 @@ function PatientsPage() {
         onClose={closeModal}
         callback={() => {
           trigger({
-            ids: selected ? [selected.uuid] : table.getSelectedRowModel().rows.map((row) => row.original.uuid),
+            ids: selected ? [selected.cuid] : table.getSelectedRowModel().rows.map((row) => row.original.cuid),
             status: active !== 'archived' ? 'archived' : 'active',
           });
         }}

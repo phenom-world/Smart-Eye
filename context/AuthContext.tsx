@@ -1,13 +1,13 @@
 'use client';
 
+import { Media } from '@prisma/client';
 import axios from 'axios';
 import { useRouter } from 'next-nprogress-bar';
 import React, { PropsWithChildren, useContext } from 'react';
 import toast from 'react-hot-toast';
 
 import { useLocalStorage } from '@/hooks';
-import { ISetState, ObjectData, ProviderResponse, UserResponse } from '@/types';
-import { Media, Provider } from '@prisma/client';
+import { ISetState, ProviderResponse, UserResponse } from '@/types';
 
 export const AuthContext = React.createContext<{
   authUser: UserResponse | null;
@@ -44,7 +44,7 @@ const AppStateProvider = ({ children }: PropsWithChildren) => {
         logo: { ...(prev?.provider?.logo as Media), mediaId: data?.mediaId },
       },
       providers: prev?.providers?.map((prov) =>
-        prov.uuid === providerId
+        prov.cuid === providerId
           ? { ...prov, name: data.name ?? '', theme: data.theme ?? '', logo: { ...(prov.logo as Media), mediaId: data?.mediaId } }
           : prov
       ),

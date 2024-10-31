@@ -6,7 +6,7 @@ import { authorizeRoles } from '../../../../middlewares/auth';
 
 const checkoutVisit = asyncWrapper(async (_req: CustomRequest, { params }: { params: { id: string } }) => {
   await prisma.visit.update({
-    where: { uuid: params.id },
+    where: { cuid: params.id },
     data: {
       checkoutAt: new Date(),
       status: 'COMPLETED',

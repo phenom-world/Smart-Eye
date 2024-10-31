@@ -18,7 +18,7 @@ const createProvider = asyncWrapper(async (req: CustomRequest) => {
 const updateProvider = asyncWrapper(async (req: CustomRequest) => {
   const { logoId, ...data } = await req.json();
   const updatedUser = await prisma.provider.update({
-    where: { uuid: req.user.providerId },
+    where: { cuid: req.user.providerId },
     data: { ...data, logo: logoId && { create: { mediaId: logoId } } },
   });
   return ApiResponse(updatedUser, 'Provider updated successfully');
@@ -27,7 +27,7 @@ const updateProvider = asyncWrapper(async (req: CustomRequest) => {
 const deleteProviders = asyncWrapper(async (req: CustomRequest) => {
   const { provider, status: currentStatus } = await req.json();
   await prisma.provider.updateMany({
-    where: { uuid: { in: provider || [] } },
+    where: { cuid: { in: provider || [] } },
     data: { active: currentStatus === 'active' ? false : true, archivedAt: currentStatus === 'active' ? new Date() : null },
   });
   return ApiResponse(null, `provider(s) ${currentStatus === 'active' ? 'archived' : 'activated'} successfully`);

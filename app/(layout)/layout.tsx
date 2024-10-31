@@ -1,15 +1,15 @@
 'use client';
+import { useRouter } from 'next-nprogress-bar';
 import { ReactNode } from 'react';
 import { HiSwitchHorizontal } from 'react-icons/hi';
 
 import NavbarSearch from '@/components/sidebar/nav-search';
+import { Tooltip } from '@/components/ui';
 import NotificationIcon from '@/components/ui/svg/notification';
 import { UserNav } from '@/components/user-nav';
+import { useAuth } from '@/context/AuthContext';
 import { useAppState } from '@/context/StateContext';
 import { cn } from '@/lib';
-import { useAuth } from '@/context/AuthContext';
-import { Tooltip } from '@/components/ui';
-import { useRouter } from 'next-nprogress-bar';
 
 const NavWrapper = ({ children }: { children: ReactNode }) => {
   const { navOpen } = useAppState();

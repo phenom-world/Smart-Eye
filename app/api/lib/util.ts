@@ -1,5 +1,4 @@
-import { Provider } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import _ from 'lodash';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -37,19 +36,22 @@ export const StreamResponse = (stream: ReadableStream, headers: ObjectData) => {
 };
 
 // verify token
-export const verifyToken = async (token: string, secret: string): Promise<UserResponse> => {
-  const data = jwt.verify(token, secret) as UserResponse;
-  if (!data) return {} as UserResponse;
+export const verifyToken = async (token: string, secret: string): Promise<UserResponse | null> => {
+  const decoded = jwt.verify(token, secret) as UserResponse;
+  if (!decoded) return null;
   const user = await prisma.user.findUnique({
-    where: { uuid: data.uuid },
-    include: { profilePhoto: true, UserProvider: { where: { providerId: data.providerId }, select: { provider: true, providerId: true }, take: 1 } },
+    where: { cuid: decoded.cuid },
+    include: {
+      profilePhoto: true,
+      UserProvider: { where: { providerId: decoded.providerId }, select: { provider: { include: { logo: true } }, providerId: true }, take: 1 },
+    },
   });
 
-  if (!user) return {} as UserResponse;
+  if (!user) return null;
   return {
     ...user,
     providerId: user?.UserProvider[0].providerId as string,
-    provider: user?.UserProvider[0].provider as Provider,
+    provider: user?.UserProvider[0].provider,
   };
 };
 
@@ -90,19 +92,19 @@ export const validate = (response: ValidateParseResponse, next: NextFunction): N
   next();
 };
 
-export const authenticateUser = (id: number, uuid: string) => {
-  const token = jwt.sign({ id, uuid }, JWT_SECRET, {
+export const authenticateUser = (id: number, cuid: string) => {
+  const token = jwt.sign({ id, cuid }, JWT_SECRET, {
     expiresIn: parseInt(JWT_EXPIRY),
   });
   return token;
 };
 
-export const authenticateUserWithProvider = (user: Partial<UserResponse>) => {
-  if (!user) return;
-  const token = jwt.sign({ id: user.id, uuid: user.uuid, providerId: user.providerId }, JWT_SECRET, {
+export const authenticateUserWithProvider = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: string }) => {
+  if (!id && !cuid && !providerId) return;
+  const token = jwt.sign({ id, cuid, providerId }, JWT_SECRET, {
     expiresIn: parseInt(JWT_EXPIRY),
   });
-  const refreshToken = jwt.sign({ id: user.id, uuid: user.uuid, providerId: user.providerId }, REFRESH_SECRET, {
+  const refreshToken = jwt.sign({ id, cuid, providerId }, REFRESH_SECRET, {
     expiresIn: parseInt(REFRESH_EXPIRY),
   });
   cookies().set('auth', token, { ...cookieOptions, maxAge: parseInt(JWT_EXPIRY) });
@@ -110,9 +112,9 @@ export const authenticateUserWithProvider = (user: Partial<UserResponse>) => {
   return { token, refreshToken };
 };
 
-export const generateAuthToken = (user: Partial<UserResponse>) => {
-  if (!user) return;
-  const token = jwt.sign({ id: user.id, uuid: user.uuid, providerId: user.providerId }, JWT_SECRET, {
+export const refreshAuthToken = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: string }) => {
+  if (!id || !cuid || !providerId) return;
+  const token = jwt.sign({ id, cuid, providerId }, JWT_SECRET, {
     expiresIn: parseInt(JWT_EXPIRY),
   });
   cookies().set('auth', token, { ...cookieOptions, maxAge: parseInt(JWT_EXPIRY) });
@@ -122,6 +124,13 @@ export const generateAuthToken = (user: Partial<UserResponse>) => {
 export const logout = () => {
   cookies().delete('auth');
   cookies().delete('refresh');
+};
+
+export const handleTokenError = (error?: JsonWebTokenError) => {
+  if (error?.name === 'TokenExpiredError') {
+    return ErrorResponse('Token has expired, please login again', 403);
+  }
+  return ErrorResponse('Invalid Token', 403);
 };
 
 export const resetTime = (date: Date, time = '00:00') => {

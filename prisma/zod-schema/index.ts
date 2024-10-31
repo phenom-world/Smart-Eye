@@ -12,19 +12,19 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const ProviderScalarFieldEnumSchema = z.enum(['uuid','id','name','billing','number','contact1','contact2','address1','address2','state','country','city','zip','tpi','npi','taxId','phone','fax','email','logoId','theme','active','archivedAt','createdAt','updatedAt']);
+export const ProviderScalarFieldEnumSchema = z.enum(['cuid','id','name','billing','number','contact1','contact2','address1','address2','state','country','city','zip','tpi','npi','taxId','phone','fax','email','logoId','theme','active','archivedAt','createdAt','updatedAt']);
 
-export const UserScalarFieldEnumSchema = z.enum(['uuid','id','lastName','firstName','middleName','email','status','phone','zip','password','country','state','city','address','role','sssopId','gender','dob','invitedAt','activeAt','archivedAt','createdAt','updatedAt','profilePhotoId']);
+export const UserScalarFieldEnumSchema = z.enum(['cuid','id','lastName','firstName','middleName','email','status','phone','zip','password','country','state','city','address','role','sssopId','gender','dob','invitedAt','activeAt','archivedAt','createdAt','updatedAt','profilePhotoId']);
 
-export const PatientScalarFieldEnumSchema = z.enum(['uuid','id','firstName','lastName','middleName','email','providerId','gender','dob','race','country','state','city','zip','apartmentNumber','address','medicaidNumber','phone','ssnNumber','active','archivedAt','createdAt','updatedAt','profilePhotoId']);
+export const PatientScalarFieldEnumSchema = z.enum(['cuid','id','firstName','lastName','middleName','email','providerId','gender','dob','race','country','state','city','zip','apartmentNumber','address','medicaidNumber','phone','ssnNumber','active','archivedAt','createdAt','updatedAt','profilePhotoId']);
 
 export const UserProviderScalarFieldEnumSchema = z.enum(['id','userId','providerId','createdAt','updatedAt']);
 
-export const PatientAdmissionScalarFieldEnumSchema = z.enum(['uuid','id','patientId','status','reason','admittedById','dischargedById','createdAt','updatedAt']);
+export const PatientAdmissionScalarFieldEnumSchema = z.enum(['cuid','id','patientId','status','reason','admittedById','dischargedById','createdAt','updatedAt']);
 
-export const MediaScalarFieldEnumSchema = z.enum(['uuid','id','fileType','fileName','mediaId','src','alt','size','updatedAt','createdAt','archivedAt']);
+export const MediaScalarFieldEnumSchema = z.enum(['cuid','id','fileType','fileName','mediaId','src','alt','size','updatedAt','createdAt','archivedAt']);
 
-export const VisitScalarFieldEnumSchema = z.enum(['uuid','id','patientId','providerId','caregiverId','checkedinMethod','patientSignatureId','caregiverSignatureId','visitDate','startTime','endTime','checkinAt','checkoutAt','latitude','longitude','otp','otpExpiresAt','status','createdAt','updatedAt']);
+export const VisitScalarFieldEnumSchema = z.enum(['cuid','id','patientId','providerId','caregiverId','checkedinMethod','patientSignatureId','caregiverSignatureId','visitDate','startTime','endTime','checkinAt','checkoutAt','latitude','longitude','otp','otpExpiresAt','status','createdAt','updatedAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -61,7 +61,7 @@ export type AdmissionStatusType = `${z.infer<typeof AdmissionStatusSchema>}`
 /////////////////////////////////////////
 
 export const ProviderSchema = z.object({
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   name: z.string().nullish(),
   billing: z.string().nullish(),
@@ -97,7 +97,7 @@ export type Provider = z.infer<typeof ProviderSchema>
 export const UserSchema = z.object({
   status: UserStatusSchema.nullish(),
   gender: GenderSchema.nullish(),
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   lastName: z.string().nullish(),
   firstName: z.string().nullish(),
@@ -129,7 +129,7 @@ export type User = z.infer<typeof UserSchema>
 
 export const PatientSchema = z.object({
   gender: GenderSchema.nullish(),
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   firstName: z.string().nullish(),
   lastName: z.string().nullish(),
@@ -176,7 +176,7 @@ export type UserProvider = z.infer<typeof UserProviderSchema>
 
 export const PatientAdmissionSchema = z.object({
   status: AdmissionStatusSchema.nullish(),
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   patientId: z.string().nullish(),
   reason: z.string().nullish(),
@@ -193,7 +193,7 @@ export type PatientAdmission = z.infer<typeof PatientAdmissionSchema>
 /////////////////////////////////////////
 
 export const MediaSchema = z.object({
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   fileType: z.string().nullish(),
   fileName: z.string().nullish(),
@@ -214,7 +214,7 @@ export type Media = z.infer<typeof MediaSchema>
 
 export const VisitSchema = z.object({
   status: VisitStatusSchema.nullish(),
-  uuid: z.string(),
+  cuid: z.string(),
   id: z.number(),
   patientId: z.string().nullish(),
   providerId: z.string(),

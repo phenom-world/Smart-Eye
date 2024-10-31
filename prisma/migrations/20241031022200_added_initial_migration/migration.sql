@@ -15,7 +15,7 @@ CREATE TYPE "AdmissionStatus" AS ENUM ('ACTIVE', 'DISCHARGED');
 
 -- CreateTable
 CREATE TABLE "Provider" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100),
     "billing" VARCHAR(100),
@@ -41,12 +41,12 @@ CREATE TABLE "Provider" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Provider_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Provider_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
 CREATE TABLE "User" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "lastName" VARCHAR(100),
     "firstName" VARCHAR(100),
@@ -71,12 +71,12 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "profilePhotoId" TEXT,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
 CREATE TABLE "Patient" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "firstName" VARCHAR(100),
     "lastName" VARCHAR(100),
@@ -101,7 +101,7 @@ CREATE TABLE "Patient" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "profilePhotoId" TEXT,
 
-    CONSTRAINT "Patient_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Patient_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
@@ -117,7 +117,7 @@ CREATE TABLE "UserProvider" (
 
 -- CreateTable
 CREATE TABLE "PatientAdmission" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "patientId" TEXT,
     "status" "AdmissionStatus",
@@ -127,12 +127,12 @@ CREATE TABLE "PatientAdmission" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "PatientAdmission_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "PatientAdmission_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
 CREATE TABLE "Media" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "fileType" VARCHAR(100),
     "fileName" VARCHAR(100),
@@ -144,12 +144,12 @@ CREATE TABLE "Media" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "archivedAt" TIMESTAMP(3),
 
-    CONSTRAINT "Media_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Media_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
 CREATE TABLE "Visit" (
-    "uuid" TEXT NOT NULL,
+    "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "patientId" TEXT,
     "providerId" TEXT NOT NULL,
@@ -170,7 +170,7 @@ CREATE TABLE "Visit" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT NOW(),
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Visit_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Visit_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateIndex
@@ -201,43 +201,43 @@ CREATE UNIQUE INDEX "Media_mediaId_key" ON "Media"("mediaId");
 CREATE UNIQUE INDEX "Visit_id_key" ON "Visit"("id");
 
 -- AddForeignKey
-ALTER TABLE "Provider" ADD CONSTRAINT "Provider_logoId_fkey" FOREIGN KEY ("logoId") REFERENCES "Media"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Provider" ADD CONSTRAINT "Provider_logoId_fkey" FOREIGN KEY ("logoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Patient" ADD CONSTRAINT "Patient_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Patient" ADD CONSTRAINT "Patient_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_admittedById_fkey" FOREIGN KEY ("admittedById") REFERENCES "User"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_admittedById_fkey" FOREIGN KEY ("admittedById") REFERENCES "User"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_dischargedById_fkey" FOREIGN KEY ("dischargedById") REFERENCES "User"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_dischargedById_fkey" FOREIGN KEY ("dischargedById") REFERENCES "User"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_patientSignatureId_fkey" FOREIGN KEY ("patientSignatureId") REFERENCES "Media"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_patientSignatureId_fkey" FOREIGN KEY ("patientSignatureId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_caregiverSignatureId_fkey" FOREIGN KEY ("caregiverSignatureId") REFERENCES "Media"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_caregiverSignatureId_fkey" FOREIGN KEY ("caregiverSignatureId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_caregiverId_fkey" FOREIGN KEY ("caregiverId") REFERENCES "User"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_caregiverId_fkey" FOREIGN KEY ("caregiverId") REFERENCES "User"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;

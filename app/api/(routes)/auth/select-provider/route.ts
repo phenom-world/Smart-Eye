@@ -6,7 +6,7 @@ import { authorizeProvider, handler } from '../../../middlewares';
 const switchProvider = asyncWrapper(async (req: CustomRequest) => {
   const user = req.user;
   const allProviders = await prisma.userProvider.findMany({
-    where: { userId: user.uuid },
+    where: { userId: user.cuid },
     select: { provider: { include: { logo: true } }, providerId: true },
   });
   const resp = authenticateUserWithProvider({ ...user, providerId: user.UserProvider[0]?.providerId });

@@ -16,7 +16,7 @@ export const authorizeProvider = async (req: CustomRequest, _res: NextResponse, 
   if (cookie) token = cookie;
 
   try {
-    decoded = jwt.verify(token as string, process.env.JWT_SECRET ?? 'secret key') as { id: number; role: string; uuid: string };
+    decoded = jwt.verify(token as string, process.env.JWT_SECRET ?? 'secret key') as { id: number; role: string; cuid: string };
   } catch (error) {
     if (error?.name === 'TokenExpiredError') {
       return ErrorResponse('Token has expired, please login again', 401);
@@ -24,7 +24,7 @@ export const authorizeProvider = async (req: CustomRequest, _res: NextResponse, 
     return ErrorResponse(`Invalid Token`, 401);
   }
   const user = await prisma.user.findUnique({
-    where: { uuid: decoded.uuid },
+    where: { cuid: decoded.cuid },
     include: {
       profilePhoto: true,
       UserProvider: { where: { providerId }, select: { provider: { include: { logo: true } }, providerId: true }, take: 1 },

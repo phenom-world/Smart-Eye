@@ -53,8 +53,8 @@ const AddPatient = ({
         <form
           className="max-h-[900px] overflow-auto flex flex-col gap-8 scrollbar-hide px-2"
           onSubmit={methods.handleSubmit(async (formData) => {
-            if (selected?.uuid) {
-              await update({ ...formData, id: selected.uuid });
+            if (selected?.cuid) {
+              await update({ ...formData, id: selected.cuid });
             } else {
               await trigger(formData);
             }

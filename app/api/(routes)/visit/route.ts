@@ -38,9 +38,9 @@ const scheduleVisit = asyncWrapper(async (req: CustomRequest) => {
         visitDate: date,
         startTime: startDate,
         endTime: endDate,
-        patient: { connect: { uuid: patientId } },
-        caregiver: { connect: { uuid: caregiverId } },
-        provider: { connect: { uuid: req.user?.providerId as string } },
+        patient: { connect: { cuid: patientId } },
+        caregiver: { connect: { cuid: caregiverId } },
+        provider: { connect: { cuid: req.user?.providerId as string } },
       },
     });
   });

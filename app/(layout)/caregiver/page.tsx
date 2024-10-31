@@ -92,7 +92,7 @@ function CaregiversPage() {
         onClose={closeModal}
         callback={() => {
           trigger({
-            ids: selected ? [selected.uuid] : table.getSelectedRowModel().rows.map((row) => row.original.uuid),
+            ids: selected ? [selected.cuid] : table.getSelectedRowModel().rows.map((row) => row.original.cuid),
             status: action as UserStatus,
           });
         }}

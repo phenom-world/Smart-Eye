@@ -2,18 +2,19 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { useRouter } from 'next-nprogress-bar';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { ImSpinner8 } from 'react-icons/im';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Separator } from '@/components/ui';
 import LogoIcon from '@/components/ui/svg/logo';
 import { useAuth } from '@/context/AuthContext';
 import { getCookies } from '@/lib';
-import { ImSpinner8 } from 'react-icons/im';
-import { getObjectURL } from '@/lib/s3Client';
-import { StaticImage } from '../static-image';
 import blurDataUrl from '@/lib/generateBlurPlaceholder';
+import { getObjectURL } from '@/lib/s3Client';
 import { ProviderResponse } from '@/types';
+
+import { StaticImage } from '../static-image';
 
 function SelectProvider() {
   const [loading, setLoading] = useState(false);
@@ -113,10 +114,10 @@ function SelectProvider() {
                 <Button
                   className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-base transition"
                   onClick={() => {
-                    setSelectedProvider(provider.uuid);
-                    handleAuthenticateProvider(provider.uuid);
+                    setSelectedProvider(provider.cuid);
+                    handleAuthenticateProvider(provider.cuid);
                   }}
-                  loading={loading && selectedProvider === provider.uuid}
+                  loading={loading && selectedProvider === provider.cuid}
                 >
                   Select Provider
                 </Button>

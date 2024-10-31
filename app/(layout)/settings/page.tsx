@@ -1,5 +1,5 @@
 'use client';
-import { Media, Provider } from '@prisma/client';
+import { Provider } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 
 import AppLoader from '@/components/app-loader';

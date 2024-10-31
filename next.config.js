@@ -12,6 +12,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withPWA(
   withBundleAnalyzer({
+    output: 'standalone',
     reactStrictMode: true,
     eslint: {
       ignoreDuringBuilds: true,
@@ -26,20 +27,3 @@ module.exports = withPWA(
     },
   })
 );
-
-/** @type {import('next').NextConfig} */
-
-module.exports = {
-  reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
-  },
-};

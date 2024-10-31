@@ -20,7 +20,7 @@ type Props = {
 type PreviewArray = {
   file?: File;
   preview: string;
-  uuid?: string;
+  cuid?: string;
   fileType?: string | null;
   mediaId?: string | null;
   size?: number | null;

@@ -11,7 +11,7 @@ const loginUser = asyncWrapper(async (req: CustomRequest) => {
     where: { email: email?.trim().toLowerCase() },
     select: {
       UserProvider: { include: { provider: { include: { logo: true } } } },
-      uuid: true,
+      cuid: true,
       id: true,
       email: true,
       password: true,
@@ -38,9 +38,11 @@ const loginUser = asyncWrapper(async (req: CustomRequest) => {
   const { UserProvider, ...rest } = user;
   const providers = await Promise.all(UserProvider.map(async (item) => item.provider));
 
+  console.log(UserProvider.length);
+
   if (UserProvider.length > 1) {
     // generate token for user with multiple providers
-    const token = authenticateUser(user?.id, user?.uuid);
+    const token = authenticateUser(user?.id, user?.cuid);
     return ApiResponse({ providers, accessToken: token });
   } else {
     const resp = authenticateUserWithProvider({ ...user, providerId: UserProvider[0]?.providerId });

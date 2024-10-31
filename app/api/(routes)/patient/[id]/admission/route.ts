@@ -11,16 +11,16 @@ const admitOrDischargePatient = async (req: CustomRequest, { params: { id } }: P
   const data = await req.json();
   let admission;
   if (data.status?.toLowerCase() === 'discharged') {
-    admission = { dischargedBy: { connect: { uuid: req.user.uuid } }, reason: data?.reason };
+    admission = { dischargedBy: { connect: { cuid: req.user.cuid } }, reason: data?.reason };
   } else if (data.status?.toLowerCase() === 'active') {
-    admission = { admittedBy: { connect: { uuid: req.user.uuid } } };
+    admission = { admittedBy: { connect: { cuid: req.user.cuid } } };
   } else {
     return ErrorResponse('invalid admission status provided', 401);
   }
 
   await prisma.patientAdmission.create({
     data: {
-      patient: { connect: { uuid: id } },
+      patient: { connect: { cuid: id } },
       status: data.status?.toUpperCase() as AdmissionStatus,
       ...admission,
     },

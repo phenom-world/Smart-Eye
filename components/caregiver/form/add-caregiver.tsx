@@ -88,7 +88,7 @@ const AddCaregiver = ({
           className="max-h-[900px] overflow-auto flex flex-col scrollbar-hide gap-8 px-2"
           onSubmit={methods.handleSubmit(async (formData) => {
             if (defaultValues) {
-              await triggerUpdate({ ...formData, id: defaultValues.uuid });
+              await triggerUpdate({ ...formData, id: defaultValues.cuid });
             } else {
               await trigger({ ...formData, role: 'caregiver' });
             }

@@ -47,7 +47,7 @@ const createUser = asyncWrapper(async (req: CustomRequest) => {
     });
 
     await prisma.user.update({
-      where: { uuid: createdUser.uuid },
+      where: { cuid: createdUser.cuid },
       data: updateUserStatus('INVITED'),
     });
   }
@@ -62,7 +62,7 @@ const updateUser = asyncWrapper(async (req: CustomRequest) => {
 
   const user = req.user;
   const updatedUser = await prisma.user.update({
-    where: { uuid: id },
+    where: { cuid: id },
     data: { ...rest, password: hashedPassword, profilePhoto: mediaId && { create: { mediaId: mediaId as string } } },
   });
 
@@ -78,7 +78,7 @@ const updateUser = asyncWrapper(async (req: CustomRequest) => {
     });
 
     await prisma.user.update({
-      where: { uuid: updatedUser.uuid },
+      where: { cuid: updatedUser.cuid },
       data: updateUserStatus('INVITED'),
     });
   }
@@ -88,7 +88,7 @@ const updateUser = asyncWrapper(async (req: CustomRequest) => {
 const updateStatus = asyncWrapper(async (req: CustomRequest) => {
   const { ids, status } = await req.json();
   await prisma.user.updateMany({
-    where: { uuid: { in: ids || [] }, UserProvider: { some: { providerId: req.user?.providerId as string } } },
+    where: { cuid: { in: ids || [] }, UserProvider: { some: { providerId: req.user?.providerId as string } } },
     data: updateUserStatus(status?.toUpperCase()),
   });
   return ApiResponse(null, `User(s) ${status === 'active' ? 'activated' : status} successfully`);

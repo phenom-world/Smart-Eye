@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next-nprogress-bar';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { ImSpinner8 } from 'react-icons/im';
 
 import { useAuth } from '@/context/AuthContext';
+import { getObjectURL } from '@/lib/s3Client';
 
 import {
   Avatar,
@@ -19,11 +21,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui';
-import { useRouter } from 'next-nprogress-bar';
 
 export function UserNav() {
   const [loading, setLoading] = useState(false);
   const { authUser, logout, clearStorage } = useAuth();
+  const [imageUrl, setImageUrl] = useState('');
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -39,13 +41,19 @@ export function UserNav() {
     }
   };
 
+  useEffect(() => {
+    if (authUser?.profilePhoto?.mediaId) {
+      getObjectURL(authUser?.profilePhoto?.mediaId).then((item) => setImageUrl(item));
+    }
+  }, [authUser?.profilePhoto?.mediaId]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild disabled={loading}>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           {!loading && authUser ? (
             <Avatar className="h-8 w-8">
-              <AvatarImage src={(authUser?.image as string) || ''} alt="@shadcn" />
+              <AvatarImage src={imageUrl || ''} alt="@shadcn" />
               {authUser?.lastName && authUser?.firstName && (
                 <AvatarFallback>
                   {authUser?.lastName.charAt(0)}

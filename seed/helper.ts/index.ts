@@ -53,7 +53,7 @@ export async function seed() {
       },
       UserProvider: {
         create: {
-          providerId: provider.uuid,
+          providerId: provider.cuid,
         },
       },
     },
@@ -74,7 +74,7 @@ export async function seed() {
           fileType: 'IMG',
         },
       },
-      UserProvider: { createMany: { data: [{ providerId: provider.uuid }, { providerId: provider2.uuid }] } },
+      UserProvider: { createMany: { data: [{ providerId: provider.cuid }, { providerId: provider2.cuid }] } },
     },
   });
 
@@ -97,7 +97,7 @@ export async function seed() {
         },
         UserProvider: {
           create: {
-            providerId: provider.uuid,
+            providerId: provider.cuid,
           },
         },
       },
@@ -119,7 +119,7 @@ export async function seed() {
             fileType: 'IMG',
           },
         },
-        UserProvider: { createMany: { data: [{ providerId: provider.uuid }, { providerId: provider2.uuid }] } },
+        UserProvider: { createMany: { data: [{ providerId: provider.cuid }, { providerId: provider2.cuid }] } },
       },
     });
     const patient = await prisma.patient.create({
@@ -137,7 +137,7 @@ export async function seed() {
         },
       },
     });
-    await prisma.patientAdmission.create({ data: { patientId: patient.uuid, status: 'ACTIVE' } });
+    await prisma.patientAdmission.create({ data: { patientId: patient.cuid, status: 'ACTIVE' } });
   });
 
   log(`User created: \u001b[1m\u001b[33m${user.email}\u001b[0m`);

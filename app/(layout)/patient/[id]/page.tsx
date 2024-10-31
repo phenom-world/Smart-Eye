@@ -35,6 +35,8 @@ const PatientDetails = ({ params: { id } }: PageProps) => {
   const [search, setSearch] = useQueryState('search', { defaultValue: '' });
   const [query, setQuery] = React.useState(initialQuery);
   const { data, isLoading } = useGetPatient({ id });
+  const [spinner, setSpinner] = useState(false);
+
   const { data: visits, isLoading: isVisitsLoading } = useGetPatientVisits({ id });
   const { trigger, isMutating } = useUpdatePatient({
     onSuccess: () => {
@@ -44,7 +46,6 @@ const PatientDetails = ({ params: { id } }: PageProps) => {
   });
 
   const [value, setValue] = useState<UploadValue | null>(null);
-  const [spinner, setSpinner] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
 
   const tableData = React.useMemo(
@@ -105,7 +106,7 @@ const PatientDetails = ({ params: { id } }: PageProps) => {
       setSpinner(false);
       if (!response?.success) return;
     }
-    trigger({ mediaId, id: data?.data?.uuid as string });
+    trigger({ mediaId, id: data?.data?.cuid as string });
   };
 
   useEffect(() => {

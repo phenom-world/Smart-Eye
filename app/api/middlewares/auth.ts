@@ -34,14 +34,14 @@ export const authorizeGetProvider = (schema: keyof PrismaClient, parent?: keyof 
       let response;
       if (parent === 'user') {
         response = await (prisma[schema] as any).findUnique({
-          where: { uuid: queryId, user: { UserProvider: { some: { providerId: req.user.providerId } } } },
+          where: { cuid: queryId, user: { UserProvider: { some: { providerId: req.user.providerId } } } },
         });
       } else if (parent) {
-        response = await (prisma[schema] as any).findUnique({ where: { uuid: queryId, [parent]: { providerId: req.user.providerId } } });
+        response = await (prisma[schema] as any).findUnique({ where: { cuid: queryId, [parent]: { providerId: req.user.providerId } } });
       } else if (schema === 'user') {
-        response = await prisma.user.findUnique({ where: { uuid: queryId, UserProvider: { some: { providerId: req.user.providerId } } } });
+        response = await prisma.user.findUnique({ where: { cuid: queryId, UserProvider: { some: { providerId: req.user.providerId } } } });
       } else {
-        response = await (prisma[schema] as any).findUnique({ where: { uuid: queryId, providerId: req.user.providerId } });
+        response = await (prisma[schema] as any).findUnique({ where: { cuid: queryId, providerId: req.user.providerId } });
       }
       if (!response) return ErrorResponse('Forbidden: Access denied', 401);
     }

@@ -7,7 +7,7 @@ type ParamProps = { params: { id: string } };
 
 const fetchPatientById = async (req: CustomRequest, { params: { id } }: ParamProps) => {
   const patient = await prisma.patient.findUnique({
-    where: { uuid: id as string, providerId: req.user?.providerId },
+    where: { cuid: id as string, providerId: req.user?.providerId },
     include: {
       PatientAdmission: { include: { admittedBy: true, dischargedBy: true }, orderBy: { createdAt: 'desc' } },
       Visit: { include: { caregiver: true }, orderBy: { visitDate: 'desc' } },

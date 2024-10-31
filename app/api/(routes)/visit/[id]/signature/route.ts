@@ -7,7 +7,7 @@ import { authorizeRoles } from '../../../../middlewares/auth';
 const signVisit = asyncWrapper(async (req: CustomRequest, { params }: { params: { id: string } }) => {
   const { patientSignatureId, caregiverSignatureId } = await req.json();
   await prisma.visit.update({
-    where: { uuid: params.id },
+    where: { cuid: params.id },
     data: {
       patientSignature: patientSignatureId && { create: { mediaId: patientSignatureId } },
       caregiverSignature: caregiverSignatureId && { create: { mediaId: caregiverSignatureId } },

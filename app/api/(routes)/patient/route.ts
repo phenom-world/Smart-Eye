@@ -19,10 +19,10 @@ const createPatient = async (req: CustomRequest) => {
     const createdPatient = await prisma.patient.create({
       data: {
         ...data,
-        provider: { connect: { uuid: req.user?.providerId } },
+        provider: { connect: { cuid: req.user?.providerId } },
       },
     });
-    await prisma.patientAdmission.create({ data: { patientId: createdPatient.uuid, status: 'ACTIVE' } });
+    await prisma.patientAdmission.create({ data: { patientId: createdPatient.cuid, status: 'ACTIVE' } });
     return ApiResponse(createdPatient, 'Patient created successfully');
   } else {
     return ErrorResponse('One or more patient information is required', 400);
@@ -34,7 +34,7 @@ const updatePatient = async (req: CustomRequest) => {
   const { id, mediaId, ...rest } = data;
   const user = req.user;
   const updatedPatient = await prisma.patient.update({
-    where: { uuid: id, providerId: user?.providerId },
+    where: { cuid: id, providerId: user?.providerId },
     data: { ...rest, profilePhoto: mediaId && { create: { mediaId: mediaId as string } } },
   });
   return ApiResponse(updatedPatient, 'Patient updated successfully');
@@ -43,7 +43,7 @@ const updatePatient = async (req: CustomRequest) => {
 const deletePatients = asyncWrapper(async (req: CustomRequest) => {
   const { ids, status } = await req.json();
   await prisma.patient.updateMany({
-    where: { uuid: { in: ids || [] }, providerId: req.user?.providerId as string },
+    where: { cuid: { in: ids || [] }, providerId: req.user?.providerId as string },
     data: { active: status === 'archived' ? false : true, archivedAt: status === 'archived' ? new Date() : null },
   });
   return ApiResponse(null, `User(s) ${status === 'archived' ? 'archived' : 'activated'} successfully`);

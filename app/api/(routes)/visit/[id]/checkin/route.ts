@@ -8,7 +8,7 @@ const checkinVisit = asyncWrapper(async (req: CustomRequest, { params }: { param
   const { latitude, longitude } = await req.json();
 
   await prisma.visit.update({
-    where: { uuid: params.id },
+    where: { cuid: params.id },
     data: {
       checkinAt: new Date(),
       latitude,

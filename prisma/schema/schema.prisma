@@ -50,7 +50,7 @@ enum AdmissionStatus {
 }
 
 model Provider {
-  uuid         String         @id @default(uuid())
+  cuid         String         @id @default(cuid())
   id           Int            @unique @default(autoincrement())
   name         String?        @db.VarChar(100)
   billing      String?        @db.VarChar(100)
@@ -69,7 +69,7 @@ model Provider {
   phone        String?        @db.VarChar(100)
   fax          String?        @db.VarChar(100)
   email        String?        @db.VarChar(100)
-  logo         Media?         @relation(fields: [logoId], references: [uuid])
+  logo         Media?         @relation(fields: [logoId], references: [cuid])
   logoId       String?
   theme        String?        @default("#2051E5") @db.VarChar(100)
   active       Boolean        @default(true)
@@ -82,7 +82,7 @@ model Provider {
 }
 
 model User {
-  uuid                       String             @id @default(uuid())
+  cuid                       String             @id @default(cuid())
   id                         Int                @unique @default(autoincrement())
   lastName                   String?            @db.VarChar(100)
   firstName                  String?            @db.VarChar(100)
@@ -108,20 +108,20 @@ model User {
   Visit                      Visit[]
   PatientAdmission           PatientAdmission[] @relation("Admission")
   DischargedPatientAdmission PatientAdmission[] @relation("Discharge")
-  profilePhoto               Media?             @relation(fields: [profilePhotoId], references: [uuid])
+  profilePhoto               Media?             @relation(fields: [profilePhotoId], references: [cuid])
   profilePhotoId             String?
   UserProvider               UserProvider[]
 }
 
 model Patient {
-  uuid             String             @id @default(uuid())
+  cuid             String             @id @default(cuid())
   id               Int                @unique @default(autoincrement())
   firstName        String?            @db.VarChar(100)
   lastName         String?            @db.VarChar(100)
   middleName       String?            @db.VarChar(100)
   email            String             @unique
   providerId       String
-  provider         Provider           @relation(fields: [providerId], references: [uuid])
+  provider         Provider           @relation(fields: [providerId], references: [cuid])
   gender           Gender?
   dob              DateTime?
   race             String?            @db.VarChar(100)
@@ -140,37 +140,37 @@ model Patient {
   updatedAt        DateTime           @updatedAt
   Visit            Visit[]
   PatientAdmission PatientAdmission[]
-  profilePhoto     Media?             @relation(fields: [profilePhotoId], references: [uuid])
+  profilePhoto     Media?             @relation(fields: [profilePhotoId], references: [cuid])
   profilePhotoId   String?
 }
 
 model UserProvider {
-  id         String   @id @default(uuid())
-  user       User     @relation(fields: [userId], references: [uuid])
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [cuid])
   userId     String   @db.VarChar(100)
-  provider   Provider @relation(fields: [providerId], references: [uuid])
+  provider   Provider @relation(fields: [providerId], references: [cuid])
   providerId String   @db.VarChar(100)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model PatientAdmission {
-  uuid           String           @id @default(uuid())
+  cuid           String           @id @default(cuid())
   id             Int              @unique @default(autoincrement())
   patientId      String?
   status         AdmissionStatus?
   reason         String?          @db.VarChar(255)
-  admittedBy     User?            @relation("Admission", fields: [admittedById], references: [uuid])
+  admittedBy     User?            @relation("Admission", fields: [admittedById], references: [cuid])
   admittedById   String?
-  dischargedBy   User?            @relation("Discharge", fields: [dischargedById], references: [uuid])
+  dischargedBy   User?            @relation("Discharge", fields: [dischargedById], references: [cuid])
   dischargedById String?          @db.VarChar(100)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  patient        Patient?         @relation(fields: [patientId], references: [uuid])
+  patient        Patient?         @relation(fields: [patientId], references: [cuid])
 }
 
 model Media {
-  uuid           String     @id @default(uuid())
+  cuid           String     @id @default(cuid())
   id             Int        @unique @default(autoincrement())
   fileType       String?    @db.VarChar(100)
   fileName       String?    @db.VarChar(100)
@@ -189,16 +189,16 @@ model Media {
 }
 
 model Visit {
-  uuid                 String       @id @default(uuid())
+  cuid                 String       @id @default(cuid())
   id                   Int          @unique @default(autoincrement())
   patientId            String?
   providerId           String
-  provider             Provider     @relation(fields: [providerId], references: [uuid])
+  provider             Provider     @relation(fields: [providerId], references: [cuid])
   caregiverId          String?
   checkedinMethod      String?      @db.VarChar(100)
-  patientSignature     Media?       @relation("PatientSignature", fields: [patientSignatureId], references: [uuid])
+  patientSignature     Media?       @relation("PatientSignature", fields: [patientSignatureId], references: [cuid])
   patientSignatureId   String?
-  caregiverSignature   Media?       @relation("CaregiverSignature", fields: [caregiverSignatureId], references: [uuid])
+  caregiverSignature   Media?       @relation("CaregiverSignature", fields: [caregiverSignatureId], references: [cuid])
   caregiverSignatureId String?
   visitDate            DateTime?
   startTime            DateTime?
@@ -212,6 +212,6 @@ model Visit {
   status               VisitStatus?
   createdAt            DateTime     @default(dbgenerated("NOW()"))
   updatedAt            DateTime     @updatedAt
-  patient              Patient?     @relation(fields: [patientId], references: [uuid])
-  caregiver            User?        @relation(fields: [caregiverId], references: [uuid])
+  patient              Patient?     @relation(fields: [patientId], references: [cuid])
+  caregiver            User?        @relation(fields: [caregiverId], references: [cuid])
 }

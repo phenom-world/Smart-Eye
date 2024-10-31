@@ -2,7 +2,7 @@ import { AdmissionStatus } from '@prisma/client';
 
 import { useMutation } from '@/hooks/useMutation';
 import useQuery from '@/hooks/useQuery';
-import { postRequest, deleteRequest, getQueryString, putRequest } from '@/lib';
+import { deleteRequest, getQueryString, postRequest, putRequest } from '@/lib';
 import { PatientForm } from '@/schema';
 import { MutatePayload, PatientResponse } from '@/types';
 
