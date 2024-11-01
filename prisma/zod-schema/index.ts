@@ -16,7 +16,9 @@ export const ProviderScalarFieldEnumSchema = z.enum(['cuid','id','name','billing
 
 export const UserScalarFieldEnumSchema = z.enum(['cuid','id','lastName','firstName','middleName','email','status','phone','zip','password','country','state','city','address','role','sssopId','gender','dob','invitedAt','activeAt','archivedAt','createdAt','updatedAt','profilePhotoId','providerId']);
 
-export const PatientScalarFieldEnumSchema = z.enum(['cuid','id','firstName','lastName','middleName','email','providerId','gender','dob','race','country','state','city','zip','apartmentNumber','address','medicaidNumber','phone','ssnNumber','active','archivedAt','createdAt','updatedAt','profilePhotoId']);
+export const PatientScalarFieldEnumSchema = z.enum(['cuid','id','firstName','lastName','middleName','email','providerId','gender','dob','race','country','state','city','zip','apartmentNumber','address','medicaidNumber','phone','ssnNumber','active','locationId','archivedAt','createdAt','updatedAt','profilePhotoId']);
+
+export const LocationScalarFieldEnumSchema = z.enum(['cuid','latitude','longitude']);
 
 export const PatientAdmissionScalarFieldEnumSchema = z.enum(['cuid','id','patientId','status','reason','admittedById','dischargedById','createdAt','updatedAt']);
 
@@ -148,6 +150,7 @@ export const PatientSchema = z.object({
   phone: z.string().nullish(),
   ssnNumber: z.string().nullish(),
   active: z.boolean(),
+  locationId: z.string().nullish(),
   archivedAt: z.date().nullish(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -155,6 +158,18 @@ export const PatientSchema = z.object({
 })
 
 export type Patient = z.infer<typeof PatientSchema>
+
+/////////////////////////////////////////
+// LOCATION SCHEMA
+/////////////////////////////////////////
+
+export const LocationSchema = z.object({
+  cuid: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+})
+
+export type Location = z.infer<typeof LocationSchema>
 
 /////////////////////////////////////////
 // PATIENT ADMISSION SCHEMA

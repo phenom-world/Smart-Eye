@@ -2,7 +2,7 @@ import { VisitStatus } from '@prisma/client';
 
 import { useMutation } from '@/hooks/useMutation';
 import useQuery from '@/hooks/useQuery';
-import { postRequest, getQueryString } from '@/lib';
+import { getQueryString, postRequest } from '@/lib';
 import { MutatePayload, VisitResponse } from '@/types';
 
 type CreateVisitPayload = {

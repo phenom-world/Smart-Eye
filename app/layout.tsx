@@ -7,7 +7,6 @@ import ProgressBar from '@/components/progress-bar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toast } from '@/components/ui/toast';
 import { siteConfig } from '@/config/site';
-import { AppContextProvider } from '@/context';
 import { SWRProvider } from '@/context/SWRProvider';
 
 export const metadata: Metadata = siteConfig;
@@ -18,9 +17,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body suppressHydrationWarning={true}>
         <Toast />
         <ThemeProvider enableSystem disableTransitionOnChange>
-          <SWRProvider>
-            <AppContextProvider>{children}</AppContextProvider>
-          </SWRProvider>
+          <SWRProvider>{children}</SWRProvider>
           <ProgressBar />
         </ThemeProvider>
       </body>

@@ -98,12 +98,22 @@ CREATE TABLE "Patient" (
     "phone" VARCHAR(100),
     "ssnNumber" VARCHAR(100),
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "locationId" TEXT,
     "archivedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "profilePhotoId" TEXT,
 
     CONSTRAINT "Patient_pkey" PRIMARY KEY ("cuid")
+);
+
+-- CreateTable
+CREATE TABLE "Location" (
+    "cuid" TEXT NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Location_pkey" PRIMARY KEY ("cuid")
 );
 
 -- CreateTable
@@ -201,6 +211,9 @@ ALTER TABLE "User" ADD CONSTRAINT "User_providerId_fkey" FOREIGN KEY ("providerI
 
 -- AddForeignKey
 ALTER TABLE "Patient" ADD CONSTRAINT "Patient_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Patient" ADD CONSTRAINT "Patient_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;

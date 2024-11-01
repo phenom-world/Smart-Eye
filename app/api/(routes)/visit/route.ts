@@ -12,7 +12,7 @@ const fetchVisits = asyncWrapper(async (req: CustomRequest) => {
   const authUser = req.user;
   const visits = await prisma.visit.findMany({
     where: { ...filter, providerId: authUser?.providerId },
-    include: { caregiver: true, patient: true },
+    include: { caregiver: true, patient: { include: { location: true } } },
     orderBy: { startTime: 'asc' },
   });
   return ApiResponse(visits);

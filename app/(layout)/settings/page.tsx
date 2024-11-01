@@ -1,6 +1,5 @@
 'use client';
 import { CheckedInMethod, Provider } from '@prisma/client';
-import { useTheme } from 'next-themes';
 import React, { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 
@@ -20,13 +19,11 @@ import { getObjectURL } from '@/lib/s3Client';
 
 const Settings = () => {
   const { user } = useAuth();
-  const { setTheme } = useTheme();
   const [imageUrl, setImageUrl] = useState<string>();
   const [provider, setProvider] = useState<Partial<Provider>>();
   const { trigger, isMutating } = useUpdateProvider({
     onSuccess: () => {
       mutate('/api/user/me');
-      setTheme(themes.find((item) => item.color === provider?.theme)?.theme ?? 'light');
     },
   });
 

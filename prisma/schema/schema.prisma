@@ -139,6 +139,8 @@ model Patient {
   phone            String?            @db.VarChar(100)
   ssnNumber        String?            @db.VarChar(100)
   active           Boolean            @default(true)
+  location         Location?          @relation(fields: [locationId], references: [cuid])
+  locationId       String?
   archivedAt       DateTime?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
@@ -148,6 +150,13 @@ model Patient {
   profilePhotoId   String?
 
   @@unique([email, providerId])
+}
+
+model Location {
+  cuid      String    @id @default(cuid())
+  latitude  Float
+  longitude Float
+  Patient   Patient[]
 }
 
 model PatientAdmission {
