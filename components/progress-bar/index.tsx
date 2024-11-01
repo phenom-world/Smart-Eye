@@ -1,8 +1,9 @@
 'use client';
-import { themes } from '@/constants';
 import { AppProgressBar } from 'next-nprogress-bar';
 import { useTheme } from 'next-themes';
 import React from 'react';
+
+import { themes } from '@/constants';
 
 const ProgressBar = () => {
   const [mounted, setMounted] = React.useState(false);
