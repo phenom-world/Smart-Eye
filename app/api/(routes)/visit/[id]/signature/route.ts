@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest } from '../../../../lib';
 import { authorizeUser, handler } from '../../../../middlewares';
-import { authorizeRoles } from '../../../../middlewares/auth';
+import { authorizeMutateProvider, authorizeRoles } from '../../../../middlewares/auth';
 
 const signVisit = asyncWrapper(async (req: CustomRequest, { params }: { params: { id: string } }) => {
   const { patientSignatureId, caregiverSignatureId } = await req.json();
@@ -18,6 +18,6 @@ const signVisit = asyncWrapper(async (req: CustomRequest, { params }: { params: 
   return ApiResponse(null, 'Visit checked in successfully');
 });
 
-const POST = handler(authorizeUser, authorizeRoles('caregiver'), signVisit);
+const POST = handler(authorizeUser, authorizeRoles('caregiver'), authorizeMutateProvider('visit'), signVisit);
 
 export { POST };

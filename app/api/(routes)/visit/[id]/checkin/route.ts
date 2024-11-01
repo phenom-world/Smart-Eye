@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest } from '../../../../lib';
 import { authorizeUser, handler } from '../../../../middlewares';
-import { authorizeRoles } from '../../../../middlewares/auth';
+import { authorizeMutateProvider, authorizeRoles } from '../../../../middlewares/auth';
 
 const checkinVisit = asyncWrapper(async (req: CustomRequest, { params }: { params: { id: string } }) => {
   const { latitude, longitude } = await req.json();
@@ -19,6 +19,6 @@ const checkinVisit = asyncWrapper(async (req: CustomRequest, { params }: { param
   return ApiResponse(null, 'Caregiver checked in successfully');
 });
 
-const POST = handler(authorizeUser, authorizeRoles('caregiver'), checkinVisit);
+const POST = handler(authorizeUser, authorizeRoles('caregiver'), authorizeMutateProvider('visit'), checkinVisit);
 
 export { POST };

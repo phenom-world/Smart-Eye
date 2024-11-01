@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest, generateRandomString, getQuery, hashPassword, sendEmail } from '../../lib';
 import { authorizeUser, handler } from '../../middlewares';
-import { authorizeRoles, authorizeUpdateProvider } from '../../middlewares/auth';
+import { authorizeMutateProvider, authorizeRoles } from '../../middlewares/auth';
 import { updateUserStatus } from './helper';
 
 const fetchUsers = asyncWrapper(async (req: CustomRequest) => {
@@ -14,7 +14,7 @@ const fetchUsers = asyncWrapper(async (req: CustomRequest) => {
     where: {
       role,
       ...filter,
-      UserProvider: { some: { providerId: authUser?.providerId } },
+      providerId: authUser?.providerId,
     },
   });
   return ApiResponse(users);
@@ -31,7 +31,7 @@ const createUser = asyncWrapper(async (req: CustomRequest) => {
       ...rest,
       password: hashedPassword,
       profilePhoto: mediaId && { create: { mediaId: mediaId as string } },
-      provider: { connect: { id: user?.providerId } },
+      providerId: user?.providerId,
     },
   });
 
@@ -44,6 +44,7 @@ const createUser = asyncWrapper(async (req: CustomRequest) => {
       companyName: user?.provider?.name,
       adminContactInfo: user?.provider?.phone,
       role: 'caregiver',
+      companyId: req.user.providerId,
     });
 
     await prisma.user.update({
@@ -69,6 +70,7 @@ const updateUser = asyncWrapper(async (req: CustomRequest) => {
   if (sendMail) {
     await sendEmail('activation', [updatedUser.email], {
       name: `${updatedUser.firstName} ${updatedUser.lastName}`,
+      companyId: req.user.providerId,
       email: updatedUser.email,
       password,
       appLink: `${process.env.APPSTORE_URL}`,
@@ -88,7 +90,7 @@ const updateUser = asyncWrapper(async (req: CustomRequest) => {
 const updateStatus = asyncWrapper(async (req: CustomRequest) => {
   const { ids, status } = await req.json();
   await prisma.user.updateMany({
-    where: { cuid: { in: ids || [] }, UserProvider: { some: { providerId: req.user?.providerId as string } } },
+    where: { cuid: { in: ids || [] }, providerId: req.user?.providerId },
     data: updateUserStatus(status?.toUpperCase()),
   });
   return ApiResponse(null, `User(s) ${status === 'active' ? 'activated' : status} successfully`);
@@ -96,7 +98,7 @@ const updateStatus = asyncWrapper(async (req: CustomRequest) => {
 
 const GET = handler(authorizeUser, authorizeRoles('admin'), fetchUsers);
 const POST = handler(authorizeUser, authorizeRoles('admin'), createUser);
-const PUT = handler(authorizeUser, authorizeRoles('admin'), authorizeUpdateProvider('user'), updateUser);
+const PUT = handler(authorizeUser, authorizeRoles('admin'), authorizeMutateProvider('user'), updateUser);
 const DELETE = handler(authorizeUser, authorizeRoles('admin'), updateStatus);
 
 export { DELETE, GET, POST, PUT };

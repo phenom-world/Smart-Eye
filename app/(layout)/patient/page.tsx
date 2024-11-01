@@ -68,7 +68,7 @@ function PatientsPage() {
         <ActionsCell
           callback={(action) => {
             if (action === 'view') {
-              router.push(`/patient/${row.original.id}`);
+              router.push(`/patient/${row.original.cuid}`);
             } else if (action === 'edit') {
               onOpen();
             } else {

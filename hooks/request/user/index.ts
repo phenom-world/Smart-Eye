@@ -31,3 +31,8 @@ export const useResetPassword = (prop?: MutatePayload) => {
 export const useUpdateUserStatus = (prop?: MutatePayload) => {
   return useMutation<updateStatusPayload, void>('/api/user', deleteRequest, prop);
 };
+
+export const useGetAuthUser = () => {
+  const { data } = useQuery<UserResponse | null>('/api/user/me');
+  return data?.data;
+};

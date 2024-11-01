@@ -43,16 +43,12 @@ export const verifyToken = async (token: string, secret: string): Promise<UserRe
     where: { cuid: decoded.cuid },
     include: {
       profilePhoto: true,
-      UserProvider: { where: { providerId: decoded.providerId }, select: { provider: { include: { logo: true } }, providerId: true }, take: 1 },
+      provider: { include: { logo: true } },
     },
   });
 
   if (!user) return null;
-  return {
-    ...user,
-    providerId: user?.UserProvider[0].providerId as string,
-    provider: user?.UserProvider[0].provider,
-  };
+  return user;
 };
 
 export const getQuery = (req: NextRequest): ObjectData => {
@@ -79,15 +75,15 @@ const options: ErrorMessageOptions = {
   },
   message: {
     enabled: true,
-    transform: ({ value }) => value.toLowerCase(),
+    transform: ({ value }) => value,
   },
 };
 
 export const validate = (response: ValidateParseResponse, next: NextFunction): NextResponse | void => {
   if (!response.success) {
     const { errors } = response.error;
-    const errorMessage = generateErrorMessage(errors, options); // You need to define 'options' or remove it if unnecessary
-    return ErrorResponse(errorMessage, 400);
+    const errorMessage = generateErrorMessage(errors, options);
+    return ErrorResponse(errorMessage, 422);
   }
   next();
 };
@@ -99,7 +95,7 @@ export const authenticateUser = (id: number, cuid: string) => {
   return token;
 };
 
-export const authenticateUserWithProvider = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: string }) => {
+export const authenticateUserWithProvider = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: number }) => {
   if (!id && !cuid && !providerId) return;
   const token = jwt.sign({ id, cuid, providerId }, JWT_SECRET, {
     expiresIn: parseInt(JWT_EXPIRY),
@@ -112,7 +108,7 @@ export const authenticateUserWithProvider = ({ id, cuid, providerId }: { id: num
   return { token, refreshToken };
 };
 
-export const refreshAuthToken = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: string }) => {
+export const refreshAuthToken = ({ id, cuid, providerId }: { id: number; cuid: string; providerId: number }) => {
   if (!id || !cuid || !providerId) return;
   const token = jwt.sign({ id, cuid, providerId }, JWT_SECRET, {
     expiresIn: parseInt(JWT_EXPIRY),

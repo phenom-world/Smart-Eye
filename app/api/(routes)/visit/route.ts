@@ -11,17 +11,9 @@ const fetchVisits = asyncWrapper(async (req: CustomRequest) => {
 
   const authUser = req.user;
   const visits = await prisma.visit.findMany({
-    where: {
-      ...filter,
-      providerId: authUser?.providerId,
-    },
-    include: {
-      caregiver: true,
-      patient: true,
-    },
-    orderBy: {
-      startTime: 'desc',
-    },
+    where: { ...filter, providerId: authUser?.providerId },
+    include: { caregiver: true, patient: true },
+    orderBy: { startTime: 'asc' },
   });
   return ApiResponse(visits);
 });
@@ -40,7 +32,7 @@ const scheduleVisit = asyncWrapper(async (req: CustomRequest) => {
         endTime: endDate,
         patient: { connect: { cuid: patientId } },
         caregiver: { connect: { cuid: caregiverId } },
-        provider: { connect: { cuid: req.user?.providerId as string } },
+        provider: { connect: { id: req.user?.providerId } },
       },
     });
   });
@@ -49,6 +41,6 @@ const scheduleVisit = asyncWrapper(async (req: CustomRequest) => {
 });
 
 const POST = handler(authorizeUser, authorizeRoles('admin'), scheduleVisit);
-const GET = handler(authorizeUser, authorizeRoles('admin', 'caregiver'), fetchVisits);
+const GET = handler(authorizeUser, fetchVisits);
 
 export { GET, POST };

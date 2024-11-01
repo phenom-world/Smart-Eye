@@ -1,20 +1,24 @@
 'use client';
-import { useRouter } from 'next-nprogress-bar';
-import { ReactNode } from 'react';
-import { HiSwitchHorizontal } from 'react-icons/hi';
+import { useTheme } from 'next-themes';
+import { ReactNode, useEffect } from 'react';
 
 import NavbarSearch from '@/components/sidebar/nav-search';
-import { Tooltip } from '@/components/ui';
 import NotificationIcon from '@/components/ui/svg/notification';
 import { UserNav } from '@/components/user-nav';
+import { themes } from '@/constants';
 import { useAuth } from '@/context/AuthContext';
 import { useAppState } from '@/context/StateContext';
 import { cn } from '@/lib';
 
 const NavWrapper = ({ children }: { children: ReactNode }) => {
   const { navOpen } = useAppState();
-  const { authUser } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    const theme = themes.find((item) => item.color === user?.provider?.theme)?.theme;
+    setTheme(theme!);
+  }, [setTheme, user]);
 
   return (
     <div className="flex justify-between">
@@ -25,20 +29,7 @@ const NavWrapper = ({ children }: { children: ReactNode }) => {
             <div />
             <div className="flex items-center gap-6">
               <NotificationIcon />
-              {authUser?.providers && authUser?.providers.length && (
-                <Tooltip
-                  trigger={
-                    <div
-                      className="border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10 rounded-md inline-flex items-center justify-center"
-                      onClick={() => router.push('/select-provider')}
-                    >
-                      <HiSwitchHorizontal className="text-xl" />
-                    </div>
-                  }
-                >
-                  <p>Switch Provider</p>
-                </Tooltip>
-              )}
+
               <UserNav />
             </div>
           </div>

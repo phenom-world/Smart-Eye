@@ -1,8 +1,7 @@
 import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest, ErrorResponse, generateOtp, sendEmail } from '../../../../lib';
-import { authorizeUser, handler } from '../../../../middlewares';
-import { authorizeRoles } from '../../../../middlewares/auth';
+import { authorizeMutateProvider, authorizeRoles, authorizeUser, handler } from '../../../../middlewares';
 
 const sendOtp = asyncWrapper(async (req: CustomRequest, { params }: { params: { id: string } }) => {
   const user = req.user;
@@ -40,7 +39,7 @@ const verifyOtp = asyncWrapper(async (req: CustomRequest, { params }: { params: 
   return ApiResponse(null, 'Caregiver checked in successfully');
 });
 
-const POST = handler(authorizeUser, authorizeRoles('caregiver'), sendOtp);
-const PUT = handler(authorizeUser, authorizeRoles('caregiver'), verifyOtp);
+const POST = handler(authorizeUser, authorizeRoles('caregiver'), authorizeMutateProvider('visit'), sendOtp);
+const PUT = handler(authorizeUser, authorizeRoles('caregiver'), authorizeMutateProvider('visit'), verifyOtp);
 
 export { POST, PUT };

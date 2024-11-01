@@ -85,9 +85,9 @@ function LinksGroup({ icon, label, initiallyOpened, links, link, close }: LinksG
         }}
         variant="ghost"
         size={'custom'}
-        className={`w-[100%] !block !text-base leading-1 !font-semibold !rounded-none !px-3 !py-2 hover:bg-[#344054] hover:text-white hover:!rounded-[6px]  ${
+        className={`w-[100%] !block !text-base leading-1 !font-semibold !rounded-none !px-3 !py-2 hover:bg-primary/20 hover:text-white hover:!rounded-[6px]  ${
           (isActive(pathname as string, label, link as string) || (hasLinks && sublinksActive(pathname as string, links as LinkGroupType[]))) &&
-          'bg-[#344054] !rounded-[6px]'
+          'bg-primary/20 !rounded-[6px]'
         }`}
       >
         <div className="flex justify-between items-center">

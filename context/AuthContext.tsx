@@ -1,61 +1,28 @@
 'use client';
 
-import { Media } from '@prisma/client';
 import axios from 'axios';
 import { useRouter } from 'next-nprogress-bar';
 import React, { PropsWithChildren, useContext } from 'react';
 import toast from 'react-hot-toast';
 
-import { useLocalStorage } from '@/hooks';
-import { ISetState, ProviderResponse, UserResponse } from '@/types';
+import { useGetAuthUser } from '@/hooks';
+import { UserResponse } from '@/types';
 
-export const AuthContext = React.createContext<{
-  authUser: UserResponse | null;
-  updateUser: ISetState<UserResponse | null>;
-  logout: () => Promise<void>;
-  clearStorage: () => void;
-  updateProviderState: (providerId: string, data: { name: string; theme: string; mediaId: string }) => void;
-}>({
-  authUser: null,
-  updateUser: () => null,
-  logout: () => Promise.resolve(),
-  clearStorage: () => null,
-  updateProviderState: () => null,
-});
+type AuthContextType = { user?: UserResponse | null; logout: () => Promise<void> };
+
+export const AuthContext = React.createContext<AuthContextType>({ logout: () => Promise.resolve(), user: null });
 
 const AppStateProvider = ({ children }: PropsWithChildren) => {
-  const { state, setState, removeItem } = useLocalStorage<UserResponse | null>('authUser', null);
+  const user = useGetAuthUser();
 
   const router = useRouter();
   const logout = async () => {
     await axios.post('/api/auth/logout');
     toast.success('Logged out successfully');
-    removeItem();
     router.replace('/login');
   };
 
-  const updateProviderState = (providerId: string, data: { name: string; theme: string; mediaId: string }) => {
-    setState((prev) => ({
-      ...(prev as UserResponse),
-      provider: {
-        ...(prev?.provider as ProviderResponse),
-        name: data.name ?? '',
-        theme: data.theme ?? '',
-        logo: { ...(prev?.provider?.logo as Media), mediaId: data?.mediaId },
-      },
-      providers: prev?.providers?.map((prov) =>
-        prov.cuid === providerId
-          ? { ...prov, name: data.name ?? '', theme: data.theme ?? '', logo: { ...(prov.logo as Media), mediaId: data?.mediaId } }
-          : prov
-      ),
-    }));
-  };
-
-  return (
-    <AuthContext.Provider value={{ authUser: state, updateUser: setState, logout, clearStorage: removeItem, updateProviderState }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user: user, logout }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

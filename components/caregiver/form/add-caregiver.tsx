@@ -55,7 +55,7 @@ const AddCaregiver = ({
     },
   });
 
-  usePopulateForm<CaregiverForm, Omit<User, 'password' | 'id'>>(methods.reset, defaultValues);
+  usePopulateForm<CaregiverForm, Omit<User, 'password' | 'id' | 'providerId'>>(methods.reset, defaultValues);
 
   return (
     <Modal

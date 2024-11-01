@@ -24,7 +24,7 @@ import {
 
 export function UserNav() {
   const [loading, setLoading] = useState(false);
-  const { authUser, logout, clearStorage } = useAuth();
+  const { user, logout } = useAuth();
   const [imageUrl, setImageUrl] = useState('');
   const router = useRouter();
 
@@ -35,29 +35,28 @@ export function UserNav() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      clearStorage();
       location.href = '/login';
       toast.error(error?.response?.data?.message ?? error?.message);
     }
   };
 
   useEffect(() => {
-    if (authUser?.profilePhoto?.mediaId) {
-      getObjectURL(authUser?.profilePhoto?.mediaId).then((item) => setImageUrl(item));
+    if (user?.profilePhoto?.mediaId) {
+      getObjectURL(user?.profilePhoto?.mediaId).then((item) => setImageUrl(item));
     }
-  }, [authUser?.profilePhoto?.mediaId]);
+  }, [user?.profilePhoto?.mediaId]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild disabled={loading}>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          {!loading && authUser ? (
+          {!loading && user ? (
             <Avatar className="h-8 w-8">
               <AvatarImage src={imageUrl || ''} alt="@shadcn" />
-              {authUser?.lastName && authUser?.firstName && (
+              {user?.lastName && user?.firstName && (
                 <AvatarFallback>
-                  {authUser?.lastName.charAt(0)}
-                  {authUser?.firstName.charAt(0)}
+                  {user?.lastName.charAt(0)}
+                  {user?.firstName.charAt(0)}
                 </AvatarFallback>
               )}
             </Avatar>
@@ -72,9 +71,9 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {authUser?.firstName} {authUser?.lastName}
+              {user?.firstName} {user?.lastName}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">{authUser?.email}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

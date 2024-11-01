@@ -1,5 +1,6 @@
 import { AdmissionStatus } from '@prisma/client';
 
+import { authorizeMutateProvider, authorizeRoles } from '@/app/api/middlewares/auth';
 import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest, ErrorResponse } from '../../../../lib';
@@ -29,5 +30,5 @@ const admitOrDischargePatient = async (req: CustomRequest, { params: { id } }: P
   return ApiResponse(null, `Patient ${data.status} successfully`);
 };
 
-const PUT = handler(authorizeUser, asyncWrapper(admitOrDischargePatient));
+const PUT = handler(authorizeUser, authorizeRoles('admin'), authorizeMutateProvider('patient'), asyncWrapper(admitOrDischargePatient));
 export { PUT };

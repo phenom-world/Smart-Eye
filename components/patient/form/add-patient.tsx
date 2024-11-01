@@ -45,7 +45,7 @@ const AddPatient = ({
     },
   });
 
-  usePopulateForm<PatientForm, Omit<Patient, 'id'>>(methods.reset, selected);
+  usePopulateForm<PatientForm, Omit<Patient, 'id' | 'providerId'>>(methods.reset, selected);
 
   return (
     <Modal title={`${selected ? 'Update' : 'Add'} Patient`} open={opened} onClose={onCloseModal} className="md:max-w-[720px]">

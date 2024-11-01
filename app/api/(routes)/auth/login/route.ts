@@ -1,26 +1,47 @@
 import bcrypt from 'bcryptjs';
 
+import { loginValidator } from '@/app/api/validator';
 import prisma from '@/prisma';
 
-import { ApiResponse, asyncWrapper, authenticateUser, authenticateUserWithProvider, CustomRequest, ErrorResponse } from '../../../lib';
+import { ApiResponse, asyncWrapper, authenticateUserWithProvider, CustomRequest, ErrorResponse } from '../../../lib';
 import { handler } from '../../../middlewares';
 
 const loginUser = asyncWrapper(async (req: CustomRequest) => {
-  const { email, password } = await req.json();
-  const user = await prisma.user.findUnique({
-    where: { email: email?.trim().toLowerCase() },
-    select: {
-      UserProvider: { include: { provider: { include: { logo: true } } } },
-      cuid: true,
-      id: true,
-      email: true,
-      password: true,
-      firstName: true,
-      lastName: true,
-      profilePhoto: true,
-      status: true,
-    },
-  });
+  const { email, password, companyId } = await req.json();
+  let user;
+  if (companyId) {
+    user = await prisma.user.findUnique({
+      where: { email_providerId: { email: email?.trim().toLowerCase(), providerId: companyId } },
+      select: {
+        provider: { include: { logo: true } },
+        providerId: true,
+        cuid: true,
+        id: true,
+        email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        profilePhoto: true,
+        status: true,
+      },
+    });
+  } else {
+    user = await prisma.user.findFirst({
+      where: { email: email?.trim().toLowerCase() },
+      select: {
+        provider: { include: { logo: true } },
+        providerId: true,
+        cuid: true,
+        id: true,
+        email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        profilePhoto: true,
+        status: true,
+      },
+    });
+  }
 
   if (!user) {
     return ErrorResponse('invalid username and password', 401);
@@ -35,27 +56,14 @@ const loginUser = asyncWrapper(async (req: CustomRequest) => {
     return ErrorResponse('user is not active, please contact your administrator', 401);
   }
 
-  const { UserProvider, ...rest } = user;
-  const providers = await Promise.all(UserProvider.map(async (item) => item.provider));
-
-  console.log(UserProvider.length);
-
-  if (UserProvider.length > 1) {
-    // generate token for user with multiple providers
-    const token = authenticateUser(user?.id, user?.cuid);
-    return ApiResponse({ providers, accessToken: token });
-  } else {
-    const resp = authenticateUserWithProvider({ ...user, providerId: UserProvider[0]?.providerId });
-    const responseCombined = {
-      ...rest,
-      password: undefined,
-      provider: UserProvider[0]?.provider,
-      providerId: UserProvider[0]?.providerId,
-      accessToken: resp?.token,
-      refreshToken: resp?.refreshToken,
-    };
-    return ApiResponse(responseCombined);
-  }
+  const resp = authenticateUserWithProvider({ id: user.id, cuid: user.cuid, providerId: user?.providerId });
+  const responseCombined = {
+    ...user,
+    password: undefined,
+    accessToken: resp?.token,
+    refreshToken: resp?.refreshToken,
+  };
+  return ApiResponse(responseCombined);
 });
 
-export const POST = handler(loginUser);
+export const POST = handler(loginValidator, loginUser);

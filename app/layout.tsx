@@ -17,13 +17,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning={true}>
       <body suppressHydrationWarning={true}>
         <Toast />
-        <ThemeProvider attribute="class" enableSystem disableTransitionOnChange defaultTheme="light">
-          <AppContextProvider>
-            <SWRProvider>
-              {children}
-              <ProgressBar />
-            </SWRProvider>
-          </AppContextProvider>
+        <ThemeProvider enableSystem disableTransitionOnChange>
+          <SWRProvider>
+            <AppContextProvider>{children}</AppContextProvider>
+          </SWRProvider>
+          <ProgressBar />
         </ThemeProvider>
       </body>
     </html>

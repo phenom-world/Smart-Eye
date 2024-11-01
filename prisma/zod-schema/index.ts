@@ -12,19 +12,17 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const ProviderScalarFieldEnumSchema = z.enum(['cuid','id','name','billing','number','contact1','contact2','address1','address2','state','country','city','zip','tpi','npi','taxId','phone','fax','email','logoId','theme','active','archivedAt','createdAt','updatedAt']);
+export const ProviderScalarFieldEnumSchema = z.enum(['cuid','id','name','billing','number','contact1','contact2','address1','address2','state','country','city','zip','tpi','npi','taxId','phone','fax','email','checkedinMethod','logoId','theme','active','archivedAt','createdAt','updatedAt']);
 
-export const UserScalarFieldEnumSchema = z.enum(['cuid','id','lastName','firstName','middleName','email','status','phone','zip','password','country','state','city','address','role','sssopId','gender','dob','invitedAt','activeAt','archivedAt','createdAt','updatedAt','profilePhotoId']);
+export const UserScalarFieldEnumSchema = z.enum(['cuid','id','lastName','firstName','middleName','email','status','phone','zip','password','country','state','city','address','role','sssopId','gender','dob','invitedAt','activeAt','archivedAt','createdAt','updatedAt','profilePhotoId','providerId']);
 
 export const PatientScalarFieldEnumSchema = z.enum(['cuid','id','firstName','lastName','middleName','email','providerId','gender','dob','race','country','state','city','zip','apartmentNumber','address','medicaidNumber','phone','ssnNumber','active','archivedAt','createdAt','updatedAt','profilePhotoId']);
-
-export const UserProviderScalarFieldEnumSchema = z.enum(['id','userId','providerId','createdAt','updatedAt']);
 
 export const PatientAdmissionScalarFieldEnumSchema = z.enum(['cuid','id','patientId','status','reason','admittedById','dischargedById','createdAt','updatedAt']);
 
 export const MediaScalarFieldEnumSchema = z.enum(['cuid','id','fileType','fileName','mediaId','src','alt','size','updatedAt','createdAt','archivedAt']);
 
-export const VisitScalarFieldEnumSchema = z.enum(['cuid','id','patientId','providerId','caregiverId','checkedinMethod','patientSignatureId','caregiverSignatureId','visitDate','startTime','endTime','checkinAt','checkoutAt','latitude','longitude','otp','otpExpiresAt','status','createdAt','updatedAt']);
+export const VisitScalarFieldEnumSchema = z.enum(['cuid','id','patientId','providerId','caregiverId','patientSignatureId','caregiverSignatureId','visitDate','startTime','endTime','checkinAt','checkoutAt','latitude','longitude','otp','otpExpiresAt','status','createdAt','updatedAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -61,6 +59,7 @@ export type AdmissionStatusType = `${z.infer<typeof AdmissionStatusSchema>}`
 /////////////////////////////////////////
 
 export const ProviderSchema = z.object({
+  checkedinMethod: CheckedInMethodSchema.nullish(),
   cuid: z.string(),
   id: z.number(),
   name: z.string().nullish(),
@@ -119,6 +118,7 @@ export const UserSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   profilePhotoId: z.string().nullish(),
+  providerId: z.number(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -135,7 +135,7 @@ export const PatientSchema = z.object({
   lastName: z.string().nullish(),
   middleName: z.string().nullish(),
   email: z.string(),
-  providerId: z.string(),
+  providerId: z.number(),
   dob: z.date().nullish(),
   race: z.string().nullish(),
   country: z.string().nullish(),
@@ -155,20 +155,6 @@ export const PatientSchema = z.object({
 })
 
 export type Patient = z.infer<typeof PatientSchema>
-
-/////////////////////////////////////////
-// USER PROVIDER SCHEMA
-/////////////////////////////////////////
-
-export const UserProviderSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  providerId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-})
-
-export type UserProvider = z.infer<typeof UserProviderSchema>
 
 /////////////////////////////////////////
 // PATIENT ADMISSION SCHEMA
@@ -217,9 +203,8 @@ export const VisitSchema = z.object({
   cuid: z.string(),
   id: z.number(),
   patientId: z.string().nullish(),
-  providerId: z.string(),
+  providerId: z.number(),
   caregiverId: z.string().nullish(),
-  checkedinMethod: z.string().nullish(),
   patientSignatureId: z.string().nullish(),
   caregiverSignatureId: z.string().nullish(),
   visitDate: z.date().nullish(),

@@ -17,25 +17,26 @@ const createProvider = asyncWrapper(async (req: CustomRequest) => {
 
 const updateProvider = asyncWrapper(async (req: CustomRequest) => {
   const { logoId, ...data } = await req.json();
+
   const updatedUser = await prisma.provider.update({
-    where: { cuid: req.user.providerId },
+    where: { id: req.user.providerId },
     data: { ...data, logo: logoId && { create: { mediaId: logoId } } },
   });
   return ApiResponse(updatedUser, 'Provider updated successfully');
 });
 
 const deleteProviders = asyncWrapper(async (req: CustomRequest) => {
-  const { provider, status: currentStatus } = await req.json();
+  const { providers, status: currentStatus } = await req.json();
   await prisma.provider.updateMany({
-    where: { cuid: { in: provider || [] } },
+    where: { id: { in: providers || [] } },
     data: { active: currentStatus === 'active' ? false : true, archivedAt: currentStatus === 'active' ? new Date() : null },
   });
   return ApiResponse(null, `provider(s) ${currentStatus === 'active' ? 'archived' : 'activated'} successfully`);
 });
 
-const GET = handler(authorizeUser, fetchProviders);
-const POST = handler(authorizeUser, createProvider);
+const GET = handler(authorizeUser, authorizeRoles('admin'), fetchProviders);
+const POST = handler(authorizeUser, authorizeRoles('admin'), createProvider);
 const PUT = handler(authorizeUser, authorizeRoles('admin'), updateProvider);
-const DELETE = handler(authorizeUser, deleteProviders);
+const DELETE = handler(authorizeUser, authorizeRoles('admin'), deleteProviders);
 
 export { DELETE, GET, POST, PUT };

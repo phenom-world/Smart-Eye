@@ -23,3 +23,11 @@ export const initialQuery: QueryType = {
   pageSize: 10,
   // search: '',
 };
+
+export const themes = [
+  { color: '#2051E5', theme: 'light' },
+  { color: '#058A0A', theme: 'green' },
+  { color: '#9E2DD7', theme: 'purple' },
+  { color: '#FF9500', theme: 'orange' },
+  { color: '#FF0535', theme: 'red' },
+];

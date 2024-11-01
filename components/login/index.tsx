@@ -2,14 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { isEmpty } from 'lodash';
 import { useRouter } from 'next-nprogress-bar';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSWRConfig } from 'swr';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormField, FormRender, Input } from '@/components/ui';
-import { useAuth } from '@/context/AuthContext';
 import { getCookies } from '@/lib';
 import { loginDefaultValues, LoginForm, loginFormSchema } from '@/schema/auth/login';
 
@@ -20,7 +18,6 @@ const LoginUserForm = () => {
   const [loading, setLoading] = useState(false);
   const { mutate } = useSWRConfig();
   const [error, setError] = useState<string>('');
-  const { updateUser, clearStorage } = useAuth();
   const form = useForm<LoginForm>({
     defaultValues: loginDefaultValues,
     resolver: zodResolver(loginFormSchema),
@@ -30,15 +27,8 @@ const LoginUserForm = () => {
   const handleSubmit = async (formData: LoginForm) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/auth/login', formData);
-      const data = await response.data;
-      if (data?.data?.providers) {
-        updateUser(data?.data);
-        router.push('/select-provider');
-      } else if (!isEmpty(data?.data)) {
-        updateUser(data?.data);
-        router.push('/');
-      }
+      await axios.post('/api/auth/login', { ...formData, isAdmin: true });
+      router.push('/');
       setLoading(false);
     } catch (err) {
       setError(err?.response?.data?.message || err?.message);
@@ -49,7 +39,6 @@ const LoginUserForm = () => {
   useEffect(() => {
     getCookies().then(async (cookies) => {
       if (!cookies?.auth && !cookies.refresh) {
-        clearStorage();
         mutate(() => true, undefined, false);
         router.push('/login', undefined);
       }

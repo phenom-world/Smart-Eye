@@ -14,26 +14,22 @@ import { log, prisma, updateUserStatus } from '..';
 export async function seed() {
   const hashedPassword = await bcrypt.hash('password', 10);
 
-  const [provider, provider2] = await prisma.$transaction(
-    new Array(2).fill(0).map(() => {
-      return prisma.provider.create({
-        data: {
-          name: faker.company.name(),
-          logo: {
-            create: {
-              src: faker.image.avatar(),
-              mediaId: uuidv4(),
-              fileType: 'IMG',
-            },
-          },
-          email: faker.internet.email().toLowerCase(),
-          phone: faker.phone.number(),
-          fax: faker.phone.number(),
-          address1: faker.location.streetAddress(),
+  const provider = await prisma.provider.create({
+    data: {
+      name: faker.company.name(),
+      logo: {
+        create: {
+          src: faker.image.avatar(),
+          mediaId: uuidv4(),
+          fileType: 'IMG',
         },
-      });
-    })
-  );
+      },
+      email: faker.internet.email().toLowerCase(),
+      phone: faker.phone.number(),
+      fax: faker.phone.number(),
+      address1: faker.location.streetAddress(),
+    },
+  });
 
   // create admin login
   const user = await prisma.user.create({
@@ -51,30 +47,7 @@ export async function seed() {
           fileType: 'IMG',
         },
       },
-      UserProvider: {
-        create: {
-          providerId: provider.cuid,
-        },
-      },
-    },
-  });
-
-  const userWithMultipleProviders = await prisma.user.create({
-    data: {
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      password: hashedPassword,
-      email: faker.internet.email().toLowerCase(),
-      ...updateUserStatus(UserStatus.ACTIVE),
-      role: 'admin',
-      profilePhoto: {
-        create: {
-          src: faker.image.avatar(),
-          mediaId: uuidv4(),
-          fileType: 'IMG',
-        },
-      },
-      UserProvider: { createMany: { data: [{ providerId: provider.cuid }, { providerId: provider2.cuid }] } },
+      provider: { connect: { cuid: provider.cuid } },
     },
   });
 
@@ -95,39 +68,16 @@ export async function seed() {
             fileType: 'IMG',
           },
         },
-        UserProvider: {
-          create: {
-            providerId: provider.cuid,
-          },
-        },
+        provider: { connect: { cuid: provider.cuid } },
       },
     });
-    // create caregiver with multiple providers
-    await prisma.user.create({
-      data: {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        password: hashedPassword,
-        role: 'caregiver',
-        phone: faker.number.int().toString(),
-        ...updateUserStatus(Object.values(UserStatus)[Math.floor(Math.random() * Object.values(UserStatus).length)] as UserStatus),
-        email: faker.internet.email().toLowerCase(),
-        profilePhoto: {
-          create: {
-            src: faker.image.avatar(),
-            mediaId: uuidv4(),
-            fileType: 'IMG',
-          },
-        },
-        UserProvider: { createMany: { data: [{ providerId: provider.cuid }, { providerId: provider2.cuid }] } },
-      },
-    });
+
     const patient = await prisma.patient.create({
       data: {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: faker.internet.email().toLowerCase(),
-        provider: { connect: { id: provider.id } },
+        provider: { connect: { cuid: provider.cuid } },
         profilePhoto: {
           create: {
             src: faker.image.avatar(),
@@ -141,5 +91,4 @@ export async function seed() {
   });
 
   log(`User created: \u001b[1m\u001b[33m${user.email}\u001b[0m`);
-  log(`Admin user with multiple providers created: \u001b[1m\u001b[33m${userWithMultipleProviders.email}\u001b[0m`);
 }

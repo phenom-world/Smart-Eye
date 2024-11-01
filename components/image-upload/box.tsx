@@ -31,7 +31,7 @@ const ImageUploader = ({ rounded, callback, className, disabled, center = true }
             <UploadIcon />
             <div>
               <p className="text-sm mb-1">
-                <span className="text-[#1A41B7] font-semibold">Click to upload</span> or drag and drop
+                <span className="text-primary font-semibold">Click to upload</span> or drag and drop
               </p>
               <p> PNG or JPG (144 x 32 px)</p>
             </div>

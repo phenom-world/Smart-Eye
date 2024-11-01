@@ -1,8 +1,7 @@
 import prisma from '@/prisma';
 
 import { ApiResponse, asyncWrapper, CustomRequest } from '../../../../lib';
-import { authorizeUser, handler } from '../../../../middlewares';
-import { authorizeRoles } from '../../../../middlewares/auth';
+import { authorizeMutateProvider, authorizeRoles, authorizeUser, handler } from '../../../../middlewares';
 
 const checkoutVisit = asyncWrapper(async (_req: CustomRequest, { params }: { params: { id: string } }) => {
   await prisma.visit.update({
@@ -15,6 +14,6 @@ const checkoutVisit = asyncWrapper(async (_req: CustomRequest, { params }: { par
   return ApiResponse(null, 'Caregiver checked out successfully');
 });
 
-const POST = handler(authorizeUser, authorizeRoles('caregiver'), checkoutVisit);
+const POST = handler(authorizeUser, authorizeRoles('caregiver'), authorizeMutateProvider('visit'), checkoutVisit);
 
 export { POST };

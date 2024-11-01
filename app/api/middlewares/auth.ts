@@ -7,19 +7,17 @@ import prisma from '@/prisma';
 import { CustomRequest, ErrorResponse, getQuery, ParamProps } from '../lib';
 import { NextFunction } from './handler';
 
-export const authorizeUpdateProvider = (schema: keyof PrismaClient, parent?: keyof PrismaClient) => {
-  return async (req: CustomRequest, _res: NextResponse, next: NextFunction) => {
+// allows mutation of a resource if the resource has the same providerId as the loggeduser's providerId
+export const authorizeMutateProvider = (schema: keyof PrismaClient, parent?: keyof PrismaClient) => {
+  return async (req: CustomRequest, { params }: ParamProps, next: NextFunction) => {
     const { id } = await req.clone().json();
-    if (id) {
+    const reqId = id ?? params?.id;
+    if (reqId) {
       let response;
-      if (parent === 'user') {
-        response = await (prisma[schema] as any).findUnique({ where: { id, user: { UserProvider: { some: { providerId: req.user.providerId } } } } });
-      } else if (parent) {
-        response = await (prisma[schema] as any).findUnique({ where: { id, [parent]: { providerId: req.user.providerId } } });
-      } else if (schema === 'user') {
-        response = await prisma.user.findUnique({ where: { id, UserProvider: { some: { providerId: req.user.providerId } } } });
+      if (parent) {
+        response = await (prisma[schema] as any).findUnique({ where: { cuid: reqId, [parent]: { providerId: req.user.providerId } } });
       } else {
-        response = await (prisma[schema] as any).findUnique({ where: { id, providerId: req.user.providerId } });
+        response = await (prisma[schema] as any).findUnique({ where: { cuid: reqId, providerId: req.user.providerId } });
       }
       if (!response) return ErrorResponse('Forbidden: Access denied', 401);
     }
@@ -27,19 +25,14 @@ export const authorizeUpdateProvider = (schema: keyof PrismaClient, parent?: key
   };
 };
 
+// allows read access to a resource if the resource has the same providerId as the loggeduser's providerId
 export const authorizeGetProvider = (schema: keyof PrismaClient, parent?: keyof PrismaClient) => {
   return async (req: CustomRequest, { params }: ParamProps, next: NextFunction) => {
     const queryId = getQuery(req)?.id ?? params?.id;
     if (queryId) {
       let response;
-      if (parent === 'user') {
-        response = await (prisma[schema] as any).findUnique({
-          where: { cuid: queryId, user: { UserProvider: { some: { providerId: req.user.providerId } } } },
-        });
-      } else if (parent) {
+      if (parent) {
         response = await (prisma[schema] as any).findUnique({ where: { cuid: queryId, [parent]: { providerId: req.user.providerId } } });
-      } else if (schema === 'user') {
-        response = await prisma.user.findUnique({ where: { cuid: queryId, UserProvider: { some: { providerId: req.user.providerId } } } });
       } else {
         response = await (prisma[schema] as any).findUnique({ where: { cuid: queryId, providerId: req.user.providerId } });
       }

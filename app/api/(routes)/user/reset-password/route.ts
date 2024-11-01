@@ -8,7 +8,10 @@ const resetPassword = asyncWrapper(async (req: CustomRequest) => {
   const { password, email, sendMail } = await req.json();
   const hashedPassword = await hashPassword(password);
 
-  const updatedUser = await prisma.user.update({ where: { email }, data: { password: hashedPassword } });
+  const updatedUser = await prisma.user.update({
+    where: { email_providerId: { email, providerId: user?.providerId } },
+    data: { password: hashedPassword },
+  });
 
   if (sendMail) {
     await sendEmail('reset-success', [updatedUser?.email], {
@@ -25,9 +28,12 @@ const resetPassword = asyncWrapper(async (req: CustomRequest) => {
 
 const requestResetPassword = asyncWrapper(async (req: CustomRequest) => {
   const { email } = await req.json();
-  const user = await prisma.user.findUnique({ where: { email }, include: { UserProvider: { select: { provider: true } } } });
+  const user = await prisma.user.findUnique({
+    where: { email_providerId: { email, providerId: req.user?.providerId } },
+    include: { provider: true },
+  });
 
-  await sendEmail('password-reset', [user?.UserProvider[0]?.provider?.email as string], {
+  await sendEmail('password-reset', [user?.provider?.email as string], {
     caregiverName: `${user?.firstName} ${user?.lastName}`,
     email,
     appLink: `${process.env.APP_URL}`,

@@ -11,7 +11,7 @@ export const refreshToken = async (req: CustomRequest, refreshToken: string) => 
       refreshAuthToken({
         id: user.id,
         cuid: user.cuid,
-        providerId: user.providerId as string,
+        providerId: user.providerId,
       });
     }
   } catch (error) {

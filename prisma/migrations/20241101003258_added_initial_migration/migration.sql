@@ -34,6 +34,7 @@ CREATE TABLE "Provider" (
     "phone" VARCHAR(100),
     "fax" VARCHAR(100),
     "email" VARCHAR(100),
+    "checkedinMethod" "CheckedInMethod",
     "logoId" TEXT,
     "theme" VARCHAR(100) DEFAULT '#2051E5',
     "active" BOOLEAN NOT NULL DEFAULT true,
@@ -70,6 +71,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "profilePhotoId" TEXT,
+    "providerId" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("cuid")
 );
@@ -82,7 +84,7 @@ CREATE TABLE "Patient" (
     "lastName" VARCHAR(100),
     "middleName" VARCHAR(100),
     "email" TEXT NOT NULL,
-    "providerId" TEXT NOT NULL,
+    "providerId" INTEGER NOT NULL,
     "gender" "Gender",
     "dob" TIMESTAMP(3),
     "race" VARCHAR(100),
@@ -102,17 +104,6 @@ CREATE TABLE "Patient" (
     "profilePhotoId" TEXT,
 
     CONSTRAINT "Patient_pkey" PRIMARY KEY ("cuid")
-);
-
--- CreateTable
-CREATE TABLE "UserProvider" (
-    "id" TEXT NOT NULL,
-    "userId" VARCHAR(100) NOT NULL,
-    "providerId" VARCHAR(100) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "UserProvider_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -152,9 +143,8 @@ CREATE TABLE "Visit" (
     "cuid" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "patientId" TEXT,
-    "providerId" TEXT NOT NULL,
+    "providerId" INTEGER NOT NULL,
     "caregiverId" TEXT,
-    "checkedinMethod" VARCHAR(100),
     "patientSignatureId" TEXT,
     "caregiverSignatureId" TEXT,
     "visitDate" TIMESTAMP(3),
@@ -180,13 +170,13 @@ CREATE UNIQUE INDEX "Provider_id_key" ON "Provider"("id");
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "User_email_providerId_key" ON "User"("email", "providerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Patient_id_key" ON "Patient"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Patient_email_key" ON "Patient"("email");
+CREATE UNIQUE INDEX "Patient_email_providerId_key" ON "Patient"("email", "providerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PatientAdmission_id_key" ON "PatientAdmission"("id");
@@ -207,16 +197,13 @@ ALTER TABLE "Provider" ADD CONSTRAINT "Provider_logoId_fkey" FOREIGN KEY ("logoI
 ALTER TABLE "User" ADD CONSTRAINT "User_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Patient" ADD CONSTRAINT "Patient_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Patient" ADD CONSTRAINT "Patient_profilePhotoId_fkey" FOREIGN KEY ("profilePhotoId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserProvider" ADD CONSTRAINT "UserProvider_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_admittedById_fkey" FOREIGN KEY ("admittedById") REFERENCES "User"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -228,7 +215,7 @@ ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_dischargedById_f
 ALTER TABLE "PatientAdmission" ADD CONSTRAINT "PatientAdmission_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Visit" ADD CONSTRAINT "Visit_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("cuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Visit" ADD CONSTRAINT "Visit_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Visit" ADD CONSTRAINT "Visit_patientSignatureId_fkey" FOREIGN KEY ("patientSignatureId") REFERENCES "Media"("cuid") ON DELETE SET NULL ON UPDATE CASCADE;

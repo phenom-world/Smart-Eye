@@ -33,7 +33,7 @@ function NavbarSearch() {
       {/* side nav */}
       <div
         className={cn(
-          'h-full overflow-x-hidden transition-width duration-30 border-r border-r-border/60 px-3 bg-[#06102E] text-white',
+          'h-full overflow-x-hidden transition-width duration-30 border-r border-r-border/60 px-3 bg-sidebar text-white',
           navOpen ? 'w-[266px]' : 'w-0'
         )}
       >
@@ -52,7 +52,7 @@ function NavbarSearch() {
       <div className={cn('w-6 pt-4 bg-transparent', !navOpen && 'border-r-border border-r w-4')} onClick={toggleNav}>
         <div
           className={cn(
-            'w-fit h-fit bg-background z-[60] text-[#06102E] hover:bg-[#06102E] hover:text-background cursor-pointer absolute rounded-full p-1 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] border-border border',
+            'w-fit h-fit bg-background z-[60] text-sidebar hover:bg-sidebar hover:text-background cursor-pointer absolute rounded-full p-1 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] border-border border',
             navOpen ? 'right-3' : '-right-3 transform rotate-180 transition-transform duration-300'
           )}
         >

@@ -30,6 +30,7 @@ export const generateRandomString = (): string => {
 };
 
 export const capitalize = (text = '') => text.trim().charAt(0).toUpperCase() + text.trim().slice(1).toLowerCase();
+export const capitalizeFirst = (text = '') => text.trim().charAt(0).toUpperCase() + text.trim().slice(1);
 
 export function generateImageUrl(providerId: string, image: string) {
   return `${providerId}/${image}`;

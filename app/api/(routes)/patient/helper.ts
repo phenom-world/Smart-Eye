@@ -2,7 +2,7 @@ import { AdmissionStatus } from '@prisma/client';
 
 import prisma from '@/prisma';
 
-export async function getPatients({ providerId, status, filter }: { providerId: string; status?: string; filter: string }) {
+export async function getPatients({ providerId, status, filter }: { providerId: number; status?: string; filter: string }) {
   const patientFilter = filter === 'all' ? {} : { active: filter !== 'archived' };
   let patients;
   patients = await prisma.patient.findMany({

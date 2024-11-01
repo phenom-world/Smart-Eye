@@ -1,25 +1,14 @@
-import { Prisma, Provider } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
-export type UserResponse = Prisma.UserGetPayload<{
-  omit: {
-    password: true;
-  };
-  include: {
-    profilePhoto: true;
-    UserProvider: {
-      select: {
-        provider: true;
-        providerId: true;
-      };
-    };
-  };
-}> &
-  Partial<{
-    providers: ProviderResponse[];
-    accessToken: string;
-    refreshToken: string;
-    provider: ProviderResponse;
-    providerId: string;
+interface TokenInfo {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export type UserResponse = TokenInfo &
+  Prisma.UserGetPayload<{
+    omit: { password: true };
+    include: { profilePhoto: true; provider: { include: { logo: true } }; providerId: true };
   }>;
 
 export type PatientAdmissionResponse = Prisma.PatientAdmissionGetPayload<{

@@ -6,7 +6,7 @@ const getVisitFilter = (status: string, date?: string) => {
   if (status?.toLowerCase() === 'all') {
     return {};
   } else if (status?.toLowerCase() === 'upcoming') {
-    return { startTime: { gte: new Date() } };
+    return { startTime: { gte: new Date() }, status: null };
   } else if (status?.toLowerCase() === 'missed') {
     return { endTime: { lte: new Date() } };
   } else if (status?.toLowerCase() === 'today') {

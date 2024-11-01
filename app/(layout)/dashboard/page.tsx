@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const { data, isLoading } = useGetVisits({});
   const [query, setQuery] = React.useState(initialQuery);
   const timeRanges = ['24 hours', '7 days', '30 days'];
-  const { authUser } = useAuth();
+  const { user } = useAuth();
 
   const tableData = React.useMemo(
     () =>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     <div className="flex-col md:flex max-w-full">
       <div className="flex-1 space-y-6 sm:space-y-8 p-4 md:p-8 ">
         <div className="flex flex-col  justify-between space-y-4 sm:space-y-6">
-          <h2 className="text-xl md:text-[30px] leading-[38px] text-[#101828] font-semibold tracking-tight">{authUser?.provider?.name} Dashboard</h2>
+          <h2 className="text-xl md:text-[30px] leading-[38px] text-[#101828] font-semibold tracking-tight">{user?.provider?.name} Dashboard</h2>
           <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
             <div className="inline-flex items-center border border-[#D0D5DD] rounded-[8px] overflow-hidden">
               {timeRanges.map((range) => (
