@@ -1,36 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+**SmartEye - An AI Solution for the Visually Impaired’**
 
-## Getting Started
+Simply, a web application for individuals with low vision capabilities to excel in daily tasks.
 
-First, run the development server:
+The project, SmartEye’ is aimed to address the challenges faced by visually impaired individuals by leveraging cutting-edge technologies, primarily based in Computer Vision and Digital Image Processing, specifically built upon the foundations of Deep Learning.
+It is an innovative assistive tool that empowers visually impaired users to access written and digital content seamlessly, by leveraging a device's camera to provide real-time information about the user's surroundings.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Key structures of SmartEye’ include real-time text recognition, real-time object detection and audio output capabilities, enabling users to effortlessly comprehend and interact with their surroundings. Moreover, the system is designed to adapt to various environmental conditions, providing a robust solution for users in different settings.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+In conclusion, this project contributes to the inclusive integration of individuals with visual disability into our society by fostering independent access to information and promoting equal opportunities.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Through the integration of state-of-the-art technologies in Artificial Intelligence and Machine Learning, this project aligns with the overarching goal of creating a more accessible and inclusive world for all individuals.
